@@ -1,0 +1,15 @@
+﻿@using ServerChessBoard.Models;
+<h3>ChessPiece</h3>
+<li class="draggable" draggable="true" title="@ChessModel.Position.ToString()" @ondragstart="@(() => HandleDragStart(ChessModel))">
+    <p class="description">@ChessModel.Id</p>
+</li>
+
+@code {
+    [CascadingParameter] Chessboard Container { get; set; }
+    [Parameter] public ChessModel ChessModel { get; set; }
+
+    private void HandleDragStart(ChessModel selectedJob)
+    {
+        Container.Payload = selectedJob;
+    }
+}
