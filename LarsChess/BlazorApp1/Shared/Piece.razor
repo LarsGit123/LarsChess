@@ -1,0 +1,16 @@
+﻿@using BlazorApp1.Models;
+<div class="draggable-piece piece" draggable="true"  @ondragstart="@(() => HandleDragStart(Model))">
+    @if(Model != null)
+    {
+        <h4>@Model.Class</h4>
+    }
+</div>
+@code {
+    [Parameter] public PieceModel Model { get; set; }
+    [CascadingParameter] PiecesContainer Container { get; set; }
+
+    private void HandleDragStart(PieceModel selectedJob)
+    {
+        Container.Payload = this.Model;
+    }
+}

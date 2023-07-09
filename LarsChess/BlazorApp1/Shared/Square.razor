@@ -1,0 +1,62 @@
+﻿@using BlazorApp1.Models;
+
+<div class="square @colourClass @dropClass"
+     ondragover="event.preventDefault();"
+     ondragstart="event.dataTransfer.setData('', event.target.id);"
+@ondrop="HandleDrop"
+@ondragenter="HandleDragEnter"
+@ondragleave="HandleDragLeave">
+@if(Position != null)
+{
+    <strong>
+        @Position[0].ToString();
+        @Position[1].ToString();
+        </strong>
+        if(Model != null)
+        {
+            <Piece Model="Model"/>
+        }
+    }
+</div>
+
+@code {
+    [CascadingParameter] PiecesContainer Container { get; set; }
+    string colourClass = "";
+    string dropClass = "";
+    [Parameter] public int[] Position { get; set; }
+    [Parameter] public PieceModel Model { get; set; }
+
+    protected override void OnInitialized()
+    { 
+        Math.DivRem(Position[0] + Position[1], 2, out var rem);
+        colourClass = (rem == 0)
+        ? "square-black"
+        : "square-white";
+
+    }
+
+    private void HandleDragEnter()
+    {
+        if (this.Model == Container.Payload) return;
+
+        if (this.Model != null && this.Model != Container.Payload)
+        {
+            dropClass = "no-drop";
+        }
+        else
+        {
+            dropClass = "can-drop";
+        }
+    }
+
+    private void HandleDragLeave()
+    {
+        this.Model = null;
+    }
+
+    private async Task HandleDrop()
+    {
+        Container.Payload.Position = this.Position;
+        this.Model = Container.Payload;
+    }
+}

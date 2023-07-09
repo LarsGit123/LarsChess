@@ -1,7 +1,70 @@
 ﻿@page "/"
+@using BlazorApp1.Models;
 
 <PageTitle>Index</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+
+<JobsContainer Jobs="Jobs" OnStatusUpdated="HandleStatusUpdated">
+    <JobList ListStatus="JobStatuses.TODO" AllowedStatuses="@(new JobStatuses[] { JobStatuses.INPROGRESS})" />
+    <JobList ListStatus="JobStatuses.INPROGRESS" AllowedStatuses="@(new JobStatuses[] { JobStatuses.TODO, JobStatuses.COMPLETED})" />
+    <JobList ListStatus="JobStatuses.COMPLETED" AllowedStatuses="@(new JobStatuses[] { JobStatuses.INPROGRESS, JobStatuses.DONE})" />
+    <JobList ListStatus="JobStatuses.DONE" AllowedStatuses="@(new JobStatuses[] { JobStatuses.COMPLETED , JobStatuses.INPROGRESS })" />
+</JobsContainer>
+
+<PiecesContainer Pieces = "Pieces">
+    <BoardRow>
+        @foreach (var pos in BoardPositions.Where(b => b[0] == 0))
+        {
+            <Square Position="@pos" Model="Pieces.FirstOrDefault(p=>p.Position[0] == pos[0] && p.Position[1] == pos[1])" />
+        }
+    </BoardRow>
+    
+    <BoardRow>
+        @foreach (var pos in BoardPositions.Where(b => b[0] == 1))
+        {
+            <Square Position="@pos" Model="Pieces.FirstOrDefault(p=>p.Position[0] == pos[0] && p.Position[1] == pos[1])" />
+        }
+    </BoardRow>
+    
+</PiecesContainer>
+
+
+
+
+@code{
+    List<int[]> BoardPositions = new List<int[]>();
+
+    List<JobModel> Jobs = new List<JobModel>();
+    List<PieceModel> Pieces = new List<PieceModel>();
+    string lastUpdatedJob = "";
+
+    protected override void OnInitialized()
+    {
+
+
+        for(int i=0; i<8; i++)
+        {
+            Pieces.Add(new PieceModel{ Class = PieceClass.Pawn, Position= new[]{1,i}});
+            for(int j = 0; j<8; j++)
+            {
+                BoardPositions.Add(new[] { i, j });
+            }
+        }
+        Jobs.Add(
+            new JobModel() {
+                Id = 1,
+                Description = "LarsJobDesc",
+                LastUpdated = DateTime.Now,
+                Status = JobStatuses.TODO
+    });
+    }
+
+    void HandleStatusUpdated(JobModel updatedJob)
+    {
+        lastUpdatedJob = updatedJob.Description;
+    }
+}

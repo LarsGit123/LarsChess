@@ -1,0 +1,26 @@
+﻿@using BlazorApp1.Models;
+<h3>PiecesContainer</h3>
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+
+
+@code {
+    [Parameter] public List<PieceModel> Pieces { get; set; }
+    [Parameter] public EventCallback<PieceModel> OnStatusUpdated { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    public PieceModel Payload { get; set; }
+
+
+
+    public async Task UpdateJobAsync(JobStatuses newStatus)
+    {
+    }
+
+    public async Task ParameterSetAsync()
+    {
+        
+    }
+}

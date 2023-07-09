@@ -118,3 +118,125 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.piece {
+    height: 40px;
+    width: 40px;
+}
+
+.piece-black {
+    background-color:black;
+}
+
+.piece-white {
+    background-color: white;
+}
+
+.square {
+    height: 80px;
+    width: 80px;
+    background-color: black;
+    margin: 1px;
+    justify-content:center;
+
+}
+     
+    .square-black{
+        background-color:deepskyblue;
+    }
+
+    .square-white{
+        background-color:lightblue;
+    }
+
+    .boardrow{
+        width:640;
+        display:flex;
+        flex-direction:row;
+    }
+
+.jobs-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.job-status {
+    display: flex;
+    flex-direction: column;
+    width: 312px;
+}
+
+    .job-status ul {
+        flex: 1;
+    }
+
+.dropzone {
+    padding: 30px;
+    border: 1px dashed #75868a;
+    list-style: none;
+}
+
+.no-drop {
+    border: 2px dashed red;
+}
+
+.can-drop {
+    border: 2px dashed green;
+}
+
+.draggable-piece {
+    border: 1px solid #424d5c;
+    cursor: grab;
+}
+
+.draggable {
+    margin-bottom: 10px;
+    padding: 10px 25px;
+    border: 1px solid #424d5c;
+    cursor: grab;
+    background: #5c6b7f;
+    color: #ffffff;
+    border-radius: 5px;
+    width: 250px;
+}
+
+.jobs-container .job-status:nth-child(2) .draggable {
+    background: red;
+}
+
+.jobs-container .job-status:nth-child(1) .draggable {
+    background: blue;
+}
+
+.jobs-container .job-status:nth-child(4) .draggable {
+    background: green;
+}
+
+.jobs-container .job-status:nth-child(3) .draggable {
+    background: orange;
+}
+
+.draggable:active {
+    cursor: grabbing;
+}
+
+.dragging {
+    cursor: grabbing;
+}
+
+.description {
+    font-size: 18px;
+}
+
+.last-updated {
+    margin-bottom: 0;
+    font-size: 11px;
+    color: #e1e5ea;
+    font-weight: bold;
+}
+
+    .last-updated small {
+        text-transform: uppercase;
+        color: #c4cbd4;
+        font-size: 11px;
+    }
