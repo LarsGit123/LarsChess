@@ -3,72 +3,76 @@
 
 <PageTitle>Sjakk</PageTitle>
 
-<PiecesContainer Pieces = "Pieces">
-   
-   
+<PiecesContainer Pieces = "Pieces" OnStatusUpdated="HandlePieceMoved">
 
-    <BoardRow>
-        @foreach (var pos in BoardPositions.Where(b => b[0] == 0))
-        {
-            <Square Position="@pos" />
-        }
-    </BoardRow>
-    
+
+
+        <BoardRow>
+            @foreach (var pos in BoardPositions.Where(b => b[0] == 0))
+            {
+                <Square Position="@pos" />
+            }
+        </BoardRow>
+
     <BoardRow>
         @foreach (var pos in BoardPositions.Where(b => b[0] == 1))
         {
             <Square Position="@pos" />
         }
     </BoardRow>
-    
+
+    <BoardRow>
+        @foreach (var pos in BoardPositions.Where(b => b[0] == 2))
+        {
+            <Square Position="@pos" />
+        }
+    </BoardRow>
+
+    <BoardRow>
+        @foreach (var pos in BoardPositions.Where(b => b[0] == 3))
+        {
+            <Square Position="@pos" />
+        }
+    </BoardRow>
+
+    <BoardRow>
+            @foreach (var pos in BoardPositions.Where(b => b[0] == 4))
+            {
+                <Square Position="@pos" />
+            }
+        </BoardRow>
+
+    <BoardRow>
+        @foreach (var pos in BoardPositions.Where(b => b[0] == 5))
+        {
+            <Square Position="@pos" />
+        }
+    </BoardRow>
+
+
+    <BoardRow>
+        @foreach (var pos in BoardPositions.Where(b => b[0] == 6))
+        {
+            <Square Position="@pos" />
+        }
+    </BoardRow>
+
+    <BoardRow>
+            @foreach (var pos in BoardPositions.Where(b => b[0] == 7))
+            {
+                <Square Position="@pos" />
+            }
+        </BoardRow>
+
+
+        
 </PiecesContainer>
 
-<ul>
-    @foreach(var piece in Pieces)
-    {
-        <li>
-            @piece.Position[0] @piece.Position[1]
-        </li>
-    }
-</ul>
-
-
-<button @onclick="Refresh">refresh</button>
-
-
-
-<ul>
-    <li draggable="true" @ondragstart="OnDragStart" style="background-color:blue;color:white;width:50px;height:50px;">drag me</li>
-</ul>
-
-<div dropzone="move" @ondrop="OnDrop" ondragover="event.preventDefault();" style="background-color:green;color:white;width:200px;height:200px;">
-    and drop me here
-</div>
-
-
-<div>@DragState</div>
-
-
+<strong>last move @lastMove</strong>
 
 
 @code{
-
-    public string DragState = "waiting...";
-
-    public void OnDragStart(DragEventArgs dragEventArgs)
-    {
-        DragState = "drag started";
-    }
-
-    public void OnDrop(DragEventArgs dragEventArgs)
-    {
-        DragState = "item dropped";
-    }
-
-
-
-
-
+    string lastMove = "";
     List<int[]> BoardPositions = new List<int[]>();
 
     List<JobModel> Jobs = new List<JobModel>();
@@ -86,7 +90,7 @@
 
         for(int i=0; i<8; i++)
         {
-            Pieces.Add(new PieceModel{ Class = PieceClass.Pawn, Position= new[]{1,i}, Id = Guid.NewGuid().ToString()} );
+            Pieces.Add(new PieceModel(new[] { 1, i }, Guid.NewGuid().ToString(), PieceClass.Pawn));
             for(int j = 0; j<8; j++)
             {
                 BoardPositions.Add(new[] { i, j });
@@ -103,7 +107,10 @@
 
     void HandlePieceMoved(PieceModel model)
     {
-        
+
+        lastMove = $"{model.OrgPosition[0]} {model.OrgPosition[1]} -> {model.Position[0]} {model.Position[1]}";
+        model.OrgPosition[0] = model.Position[0];
+        model.OrgPosition[1] = model.Position[1];
     }
 
     void HandleStatusUpdated(JobModel updatedJob)

@@ -1,58 +1,44 @@
 ﻿@using BlazorApp1.Models;
 
-<div class="square @colourClass @dropClass"
-     ondragover="event.preventDefault();"
-     ondragstart="event.dataTransfer.setData('', event.target.id);"
-@ondrop="HandleDrop"
-@ondragenter="HandleDragEnter"
-@ondragleave="HandleDragLeave">
-@if(Position != null)
-{
-    <strong>
-        @Position[0].ToString();
-        @Position[1].ToString();
-        </strong>
-        if (showPiece && Container?.Pieces?.FirstOrDefault(p => p.Position[0] == this.Position[0] && p.Position[1] == this.Position[1]) is PieceModel model)
+<div class="job-status">    
+
+    <ul class="dropzone @dropClass"
+        ondragover="event.preventDefault();"
+        ondragstart="event.dataTransfer.setData('', event.target.id);"
+        @ondrop="HandleDrop"
+        @ondragenter="HandleDragEnter"
+        @ondragleave="HandleDragLeave">
+
+        @foreach(var piece in pieces)
         {
-            <Piece Model="model" RefreshPreviousPosition="SetModel" />
+            <Piece Model="piece" />
         }
-    }
+        
+    </ul>
 </div>
 
 @code {
-    [CascadingParameter] PiecesContainer Container { get; set; }
-    string colourClass = "";
-    string dropClass = "";
-    bool showPiece = true;
-    [Parameter] public int[] Position { get; set; }
-    //PieceModel? model;
 
-    protected override void OnInitialized()
-    { 
-        Math.DivRem(Position[0] + Position[1], 2, out var rem);
-        colourClass = (rem == 0)
-        ? "square-black"
-        : "square-white";
-        SetModel();
-    }
+    [CascadingParameter] PiecesContainer Container { get; set; }
+    [Parameter] public int[] Position { get; set; }
+    [Parameter] public JobStatuses[] AllowedStatuses { get; set; }
+    List<PieceModel> pieces = new List<PieceModel>();
+    string dropClass = "";
 
     protected override void OnParametersSet()
     {
-        SetModel();
-    }
-
-    public void SetModel()
-    {        
-        var piece = Container?.Pieces?.FirstOrDefault(p => p.Position[0] == this.Position[0] && p.Position[1] == this.Position[1]);
-        StateHasChanged();
+        pieces.Clear();
+        pieces.AddRange(Container.Pieces.Where(p => p.Position[0] == Position[0] && p.Position[1] == Position[1]));
     }
 
     private void HandleDragEnter()
     {
-        if (Container.Payload.Position[0] == this.Position[0] && Container.Payload.Position[1] == this.Position[1]) return;
+        if (Position[0] == Container.Payload.Position[0] && Position[1] == Container.Payload.Position[1]) return;
 
-        if (Container.Pieces.Any(p => p.Position[0] == this.Position[0] && p.Position[1] == this.Position[1]))
+        if (Container.Pieces.Any(p => p.Position[0] == Position[0] && p.Position[1] == Position[1]))
         {
+            var piece = Container.Pieces.First(p => p.Position[0] == Position[0] && p.Position[1] == Position[1]);
+
             dropClass = "no-drop";
         }
         else
@@ -63,22 +49,15 @@
 
     private void HandleDragLeave()
     {
-        if(this.Position[0] == Container.Payload.Position[0] && this.Position[1] == Container.Payload.Position[1])
-        {
-            showPiece = false;
-        }
-        SetModel();
+        dropClass = "";
     }
 
     private async Task HandleDrop()
     {
-        if(dropClass == "can-drop"){                        
-            await Container.UpdatePieceAsync(this.Position);
-            
-        }
-        else
-        {
-            await Container.UpdatePieceAsync(Container.Payload.Position);
-        }    
+        dropClass = "";
+
+        if (Container.Pieces.Any(p => p.Position[0] == Position[0] && p.Position[1] == Position[1])) return;
+
+        await Container.UpdatePieceAsync(Position);
     }
 }
