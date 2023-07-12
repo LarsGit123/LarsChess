@@ -1,5 +1,5 @@
 ﻿@using BlazorApp1.Models;
-<div class="draggable-piece piece" draggable="true"  @ondragstart="@(() => HandleDragStart(Model))">
+<div class="draggable-piece piece" draggable="true" @ondragstart="@(() => HandleDragStart(Model))" @ondragend="OnDragEnd" @ondrop="OnDrop">
     @if(Model != null)
     {
         <h4>@Model.Class</h4>
@@ -8,9 +8,25 @@
 @code {
     [Parameter] public PieceModel Model { get; set; }
     [CascadingParameter] PiecesContainer Container { get; set; }
+    [Parameter] public EventCallback RefreshPreviousPosition { get; set; }
 
     private void HandleDragStart(PieceModel selectedJob)
     {
+        //Model.IsVisible = false;
         Container.Payload = this.Model;
+    }
+
+    private void OnDragEnd(DragEventArgs args)
+    {
+        Container.Payload = this.Model;
+    }
+
+    private void HandleDragEnd(PieceModel selectedJob)
+    {
+        
+    }
+
+    public void OnDrop(DragEventArgs dragEventArgs)
+    {       
     }
 }

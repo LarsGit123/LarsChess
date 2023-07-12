@@ -7,8 +7,16 @@
     <JobList ListStatus="JobStatuses.INPROGRESS" AllowedStatuses="@(new JobStatuses[] { JobStatuses.TODO, JobStatuses.COMPLETED})" />
     <JobList ListStatus="JobStatuses.COMPLETED" AllowedStatuses="@(new JobStatuses[] { JobStatuses.INPROGRESS, JobStatuses.DONE})" />
     <JobList ListStatus="JobStatuses.DONE" AllowedStatuses="@(new JobStatuses[] { JobStatuses.COMPLETED , JobStatuses.INPROGRESS })" />
-
 </JobsContainer>
+
+<PiecesContainer Pieces="Pieces" OnStatusUpdated="HandlePieceStatusUpdated">
+
+
+    <PieceList ListStatus="PieceStatuses.TODO" AllowedStatuses="@(new PieceStatuses[] { PieceStatuses.INPROGRESS})" />
+    <PieceList ListStatus="PieceStatuses.INPROGRESS" AllowedStatuses="@(new PieceStatuses[] { PieceStatuses.TODO, PieceStatuses.COMPLETED})" />
+    <PieceList ListStatus="PieceStatuses.COMPLETED" AllowedStatuses="@(new PieceStatuses[] { PieceStatuses.INPROGRESS, PieceStatuses.DONE})" />
+    <PieceList ListStatus="PieceStatuses.DONE" AllowedStatuses="@(new PieceStatuses[] { PieceStatuses.COMPLETED , PieceStatuses.INPROGRESS })" />
+</PiecesContainer>
 
 <hr />
 <p>Last updated job was: <strong>@lastUpdatedJob</strong></p>
@@ -21,10 +29,11 @@
 
 @code {
     List<JobModel> Jobs = new List<JobModel>();
+    List<PieceModel> Pieces = new List<PieceModel>();
     string lastUpdatedJob = "";
 
-        protected override void OnInitialized()
-        {
+    protected override void OnInitialized()
+    {
         //Jobs.Add(new JobModel { Id = 1, Description = "Creating Database", Status = JobStatuses.Todo, LastUpdated = DateTime.Now });
         //Jobs.Add(new JobModel { Id = 2, Description = "Designing UI", Status = JobStatuses.Todo, LastUpdated = DateTime.Now });
         //Jobs.Add(new JobModel { Id = 3, Description = "Data Binding ", Status = JobStatuses.Todo, LastUpdated = DateTime.Now });
@@ -37,10 +46,17 @@
         Jobs.Add(new JobModel { Id = 3, Description = "Data Binding ", Status = JobStatuses.TODO, LastUpdated = DateTime.Now });
         Jobs.Add(new JobModel { Id = 4, Description = "Fix  All Error", Status = JobStatuses.TODO, LastUpdated = DateTime.Now });
         Jobs.Add(new JobModel { Id = 5, Description = "Finish blog ", Status = JobStatuses.TODO, LastUpdated = DateTime.Now });
+
+        Pieces.Add(new PieceModel { Id = 6, Description = "piece test", Status = PieceStatuses.TODO, LastUpdated = DateTime.Now });
     }
 
     void HandleStatusUpdated(JobModel updatedJob)
     {
         lastUpdatedJob = updatedJob.Description;
+    }
+
+    void HandlePieceStatusUpdated(PieceModel updatedPiece)
+    {
+        lastUpdatedJob = updatedPiece.Description;
     }
 }

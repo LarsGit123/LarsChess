@@ -1,0 +1,26 @@
+﻿@using ServerChessBoard2.Models;
+<div class="jobs-container">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+@code {
+    [Parameter] public List<PieceModel> Pieces { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public EventCallback<PieceModel> OnStatusUpdated { get; set; }
+
+    public PieceModel Payload { get; set; }
+
+    public async Task UpdateJobAsync(PieceStatuses newStatus)
+    {
+        var task = Pieces.SingleOrDefault(x => x.Id == Payload.Id);
+
+        if (task != null)
+        {
+            task.Status = newStatus;
+            task.LastUpdated = DateTime.Now;
+            await OnStatusUpdated.InvokeAsync(Payload);
+        }
+    }
+}

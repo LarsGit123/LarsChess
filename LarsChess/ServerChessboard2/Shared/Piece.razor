@@ -1,0 +1,15 @@
+﻿ @using ServerChessBoard2.Models;
+<li class="draggable" draggable="true" title="@PieceModel.Description" @ondragstart="@(() => HandleDragStart(PieceModel))">
+    <p class="description">@PieceModel.Description</p>
+    <p class="last-updated"><small>Last Updated</small> @PieceModel.LastUpdated.ToString("HH:mm.ss tt")</p>
+</li>
+
+@code {
+    [CascadingParameter] PiecesContainer Container { get; set; }
+    [Parameter] public PieceModel PieceModel { get; set; }
+
+    private void HandleDragStart(PieceModel selectedJob)
+    {
+        Container.Payload = selectedJob;
+    }
+}

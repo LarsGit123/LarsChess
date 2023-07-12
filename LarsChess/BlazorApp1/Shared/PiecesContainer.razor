@@ -15,12 +15,14 @@
 
 
 
-    public async Task UpdateJobAsync(JobStatuses newStatus)
+    public async Task UpdatePieceAsync(int[] newPos)
     {
-    }
-
-    public async Task ParameterSetAsync()
-    {
-        
+        Payload.Position = newPos;
+        var piece = Pieces.FirstOrDefault(p => p.Id == Payload.Id);
+        if(piece != null)
+        {
+            piece.Position = Payload.Position;
+        }
+        await OnStatusUpdated.InvokeAsync(Payload);
     }
 }

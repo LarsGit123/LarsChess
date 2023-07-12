@@ -4,7 +4,9 @@
     public class PieceModel
     {
         public PieceClass Class { get; set; }
-        public int Id { get; set; }
+        public string Id { get; set; }
         public int[] Position {  get; set; }
+
+        public int[] OrgPosition { get; set; }
     }
 }

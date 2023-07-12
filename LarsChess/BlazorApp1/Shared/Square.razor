@@ -12,9 +12,9 @@
         @Position[0].ToString();
         @Position[1].ToString();
         </strong>
-        if(Model != null)
+        if (showPiece && Container?.Pieces?.FirstOrDefault(p => p.Position[0] == this.Position[0] && p.Position[1] == this.Position[1]) is PieceModel model)
         {
-            <Piece Model="Model"/>
+            <Piece Model="model" RefreshPreviousPosition="SetModel" />
         }
     }
 </div>
@@ -23,8 +23,9 @@
     [CascadingParameter] PiecesContainer Container { get; set; }
     string colourClass = "";
     string dropClass = "";
+    bool showPiece = true;
     [Parameter] public int[] Position { get; set; }
-    [Parameter] public PieceModel Model { get; set; }
+    //PieceModel? model;
 
     protected override void OnInitialized()
     { 
@@ -32,14 +33,25 @@
         colourClass = (rem == 0)
         ? "square-black"
         : "square-white";
+        SetModel();
+    }
 
+    protected override void OnParametersSet()
+    {
+        SetModel();
+    }
+
+    public void SetModel()
+    {        
+        var piece = Container?.Pieces?.FirstOrDefault(p => p.Position[0] == this.Position[0] && p.Position[1] == this.Position[1]);
+        StateHasChanged();
     }
 
     private void HandleDragEnter()
     {
-        if (this.Model == Container.Payload) return;
+        if (Container.Payload.Position[0] == this.Position[0] && Container.Payload.Position[1] == this.Position[1]) return;
 
-        if (this.Model != null && this.Model != Container.Payload)
+        if (Container.Pieces.Any(p => p.Position[0] == this.Position[0] && p.Position[1] == this.Position[1]))
         {
             dropClass = "no-drop";
         }
@@ -51,12 +63,22 @@
 
     private void HandleDragLeave()
     {
-        this.Model = null;
+        if(this.Position[0] == Container.Payload.Position[0] && this.Position[1] == Container.Payload.Position[1])
+        {
+            showPiece = false;
+        }
+        SetModel();
     }
 
     private async Task HandleDrop()
     {
-        Container.Payload.Position = this.Position;
-        this.Model = Container.Payload;
+        if(dropClass == "can-drop"){                        
+            await Container.UpdatePieceAsync(this.Position);
+            
+        }
+        else
+        {
+            await Container.UpdatePieceAsync(Container.Payload.Position);
+        }    
     }
 }
