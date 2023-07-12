@@ -1,6 +1,6 @@
 ﻿@using BlazorApp1.Models;
 
-<div class="job-status">    
+<div class="square @squareType">
 
     <ul class="dropzone @dropClass"
         ondragover="event.preventDefault();"
@@ -24,9 +24,18 @@
     [Parameter] public JobStatuses[] AllowedStatuses { get; set; }
     List<PieceModel> pieces = new List<PieceModel>();
     string dropClass = "";
+    string squareType = "";
 
     protected override void OnParametersSet()
     {
+        if((Position[0] + Position[1]) % 2 == 0)
+        {
+            squareType = "square-black";
+        }
+        else
+        {
+            squareType = "square-white";
+        }
         pieces.Clear();
         pieces.AddRange(Container.Pieces.Where(p => p.Position[0] == Position[0] && p.Position[1] == Position[1]));
     }
