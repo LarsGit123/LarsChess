@@ -1,8 +1,7 @@
 ﻿@using BlazorApp1.Models;
 
-<div class="square @squareType">
 
-    <ul class="dropzone @dropClass"
+    <div class="square @squareType dropzone @dropClass"
         ondragover="event.preventDefault();"
         ondragstart="event.dataTransfer.setData('', event.target.id);"
         @ondrop="HandleDrop"
@@ -14,8 +13,7 @@
             <Piece Model="piece" />
         }
         
-    </ul>
-</div>
+    </div>
 
 @code {
 

@@ -1,8 +1,10 @@
 ﻿@using BlazorApp1.Models;
+
 <div class="draggable-piece piece" draggable="true" @ondragstart="@(() => HandleDragStart(Model))">
     @if(Model != null)
     {
-        <h4>@Model.PieceClass</h4>
+        <i class="@fontawesomeClass(Model.PieceClass) @colourClass(Model.Colour)"></i>
+        //<h4>@Model.PieceClass</h4>
     }
 </div>
 @code {
@@ -14,4 +16,32 @@
     {        
         Container.Payload = this.Model;
     }    
+
+    private string colourClass(Colour colour)
+    {
+        return colour == Colour.Black
+            ? "piece-black"
+            : "piece-white";
+    }
+
+    private string fontawesomeClass(PieceClass piece)
+    {
+        switch (piece)
+        {
+            case PieceClass.King:
+                return "fa-solid fa-chess-king";
+            case PieceClass.Queen:
+                return "fa-solid fa-chess-queen";
+            case PieceClass.Bishop: 
+                return "fa-solid fa-chess-bishop";
+            case PieceClass.Knight:
+                return "fa-solid fa-chess-knight";
+            case PieceClass.Rook:
+                return "fa-solid fa-chess-rook";
+            case PieceClass.Pawn:
+                return "fa-solid fa-chess-pawn";
+            default:
+                return "fa-regular fa-cow";
+        }
+    }
 }
