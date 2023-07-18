@@ -17,9 +17,9 @@
         Container.Payload = this.Model;
     }    
 
-    private void HandleClick()
+    private async Task HandleClick()
     {
-        Container.VisualizeLegalMoves(Model);
+        await Container.VisualizeLegalMoves(Model);
     }
 
     private string colourClass(Colour colour)

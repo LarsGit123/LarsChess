@@ -16,7 +16,7 @@
 
     public async Task VisualizeLegalMoves(PieceModel piece)
     {
-        var legalMoves = Chessrules.GetLegalMoves(piece);
+        var legalMoves = Chessrules.GetLegalMoves(piece, Pieces);
         var legalSquares = Squares.Where(s => legalMoves.Contains(s.Position));
         if (legalSquares?.Any() ?? false)
         {
@@ -31,7 +31,7 @@
             square.IsLegalSquare = false;
         }
 
-        OnRefresh.InvokeAsync().Start();
+        await OnRefresh.InvokeAsync();
     }
 
 

@@ -41,31 +41,69 @@ namespace BlazorApp1.Data
             { (7,7), (PieceClass.Rook, Colour.Black) },
         };
     
-        public static List<(int,int)> GetLegalMoves(PieceModel model)
+        public static List<(int,int)> GetLegalMoves(PieceModel model, List<PieceModel> allPieces)
         {
             if (model is null)
                 return new List<(int, int)>();
 
-            var moves = new List<(int,int)>();
+            
             var p = model.Position;
             switch(model.PieceClass)
             {
                 case PieceClass.King:
-                    if (p.x < 7 && p.y>1)   moves.Add((p.x + 1, p.y - 1));
-                    if (p.x < 7)            moves.Add((p.x + 1, p.y));
-                    if (p.x < 7 && p.y <7)  moves.Add((p.x + 1, p.y + 1));
+                    return GetKingMoves(p);
+                case PieceClass.Pawn:
+                    return GetPawnMoves(model, allPieces);
+                default:
+                    return new List<(int, int)>();
+            }
+            
+        }
 
-                    if (p.x > 1 && p.y > 1) moves.Add((p.x - 1, p.y - 1));
-                    if (p.x > 1)            moves.Add((p.x - 1, p.y));
-                    if (p.x > 1 && p.y < 7) moves.Add((p.x - 1, p.y + 1));
+        private static List<(int, int)> GetPawnMoves(PieceModel payload, List<PieceModel> allPieces)
+        {
+            var moveDirection = (payload.Colour == Colour.White)
+                ? 1
+                : -1;
+            var moves = new List<(int, int)>();
+            if (payload.Position.y <7 && payload.Position.y  > 0)
+            {
+                moves.Add((payload.Position.x, payload.Position.y + moveDirection));
 
-                    if (p.y < 7)            moves.Add((p.x, p.y + 1));
-                    if (p.y > 1)            moves.Add((p.x, p.y - 1));
-                    break;
+                //attack moves:
+                if (allPieces.Where(p=> 
+                    payload.Colour != p.Colour && 
+                    p.Position.y == payload.Position.y + moveDirection &&
+                    p.Position.x == payload.Position.x + 1).Any())
+                {
+                    moves.Add((payload.Position.x + 1,  payload.Position.y + moveDirection));
+                }
 
+                if (allPieces.Where(p =>
+                    payload.Colour != p.Colour &&
+                    p.Position.y == payload.Position.y + moveDirection &&
+                    p.Position.x == payload.Position.x - 1).Any())
+                {
+                    moves.Add((payload.Position.x - 1, payload.Position.y + moveDirection));
+                }
             }
             return moves;
         }
-        
+
+        private static List<(int, int)> GetKingMoves((int x, int y) p)
+        {
+            var moves = new List<(int, int)>();
+            if (p.x < 7 && p.y > 1) moves.Add((p.x + 1, p.y - 1));
+            if (p.x < 7) moves.Add((p.x + 1, p.y));
+            if (p.x < 7 && p.y < 7) moves.Add((p.x + 1, p.y + 1));
+
+            if (p.x > 0 && p.y > 1) moves.Add((p.x - 1, p.y - 1));
+            if (p.x > 0) moves.Add((p.x - 1, p.y));
+            if (p.x > 0 && p.y < 7) moves.Add((p.x - 1, p.y + 1));
+
+            if (p.y < 7) moves.Add((p.x, p.y + 1));
+            if (p.y > 1) moves.Add((p.x, p.y - 1));
+            return moves;
+        }
     }
 }

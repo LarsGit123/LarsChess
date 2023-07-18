@@ -68,7 +68,7 @@
 
         dropClass = "";
 
-        var legalDropSquare = Chessrules.GetLegalMoves(Container.Payload).Any(r => r == Model.Position);
+        var legalDropSquare = Chessrules.GetLegalMoves(Container.Payload, Container.Pieces).Any(r => r == Model.Position);
         if (!legalDropSquare)
         {
             //todo: uncomment when rules are complete 
