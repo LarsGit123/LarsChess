@@ -1,4 +1,5 @@
-﻿@using BlazorApp1.Models;
+﻿@using BlazorApp1.Data;
+@using BlazorApp1.Models;
 
 
     <div class="square @squareType dropzone @dropClass"
@@ -7,18 +8,17 @@
         @ondrop="HandleDrop"
         @ondragenter="HandleDragEnter"
         @ondragleave="HandleDragLeave">
-
-        @foreach(var piece in pieces)
+    
+        @foreach (var piece in pieces)
         {
             <Piece Model="piece" />
         }
-        
     </div>
 
 @code {
 
     [CascadingParameter] PiecesContainer Container { get; set; }
-    [Parameter] public int[] Position { get; set; }
+    [Parameter] public (int x, int y) Position { get; set; }
     [Parameter] public JobStatuses[] AllowedStatuses { get; set; }
     List<PieceModel> pieces = new List<PieceModel>();
     string dropClass = "";
@@ -26,7 +26,7 @@
 
     protected override void OnParametersSet()
     {
-        if((Position[0] + Position[1]) % 2 == 0)
+        if((Position.x + Position.y) % 2 == 0)
         {
             squareType = "square-black";
         }
@@ -35,16 +35,16 @@
             squareType = "square-white";
         }
         pieces.Clear();
-        pieces.AddRange(Container.Pieces.Where(p => p.Position[0] == Position[0] && p.Position[1] == Position[1]));
+        pieces.AddRange(Container.Pieces.Where(p => p.Position == Position));
     }
 
     private void HandleDragEnter()
     {
-        if (Position[0] == Container.Payload.Position[0] && Position[1] == Container.Payload.Position[1]) return;
+        if (Position == Container.Payload.Position) return;
 
-        if (Container.Pieces.Any(p => p.Position[0] == Position[0] && p.Position[1] == Position[1]))
+        if (Container.Pieces.Any(p => p.Position == Position))
         {
-            var piece = Container.Pieces.First(p => p.Position[0] == Position[0] && p.Position[1] == Position[1]);
+            var piece = Container.Pieces.First(p => p.Position == Position);
 
             dropClass = "no-drop";
         }
@@ -61,9 +61,15 @@
 
     private async Task HandleDrop()
     {
+
         dropClass = "";
 
-        if (Container.Pieces.Any(p => p.Position[0] == Position[0] && p.Position[1] == Position[1])) return;
+        var legalDropSquare = Chessrules.GetLegalMoves(Container.Payload).Any(r => r == Position);
+        if (!legalDropSquare)
+        {
+            
+        }
+        if (Container.Pieces.Any(p => p.Position == Position)) return;
 
         await Container.UpdatePieceAsync(Position);
     }

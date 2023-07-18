@@ -41,10 +41,14 @@ namespace BlazorApp1.Data
             { (7,7), (PieceClass.Rook, Colour.Black) },
         };
     
-        public static List<(int,int)> GetLegalMoves(PieceClass piece, Colour colour, (int x,int y) p)
+        public static List<(int,int)> GetLegalMoves(PieceModel model)
         {
+            if (model is null)
+                return new List<(int, int)>();
+
             var moves = new List<(int,int)>();
-            switch(piece)
+            var p = model.Position;
+            switch(model.PieceClass)
             {
                 case PieceClass.King:
                     if (p.x < 7 && p.y>1)   moves.Add((p.x + 1, p.y - 1));

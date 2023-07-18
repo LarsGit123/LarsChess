@@ -13,7 +13,7 @@
 
 
 
-    public async Task UpdatePieceAsync(int[] newPos)
+    public async Task UpdatePieceAsync((int x, int y) newPos)
     {
         Payload.Position = newPos;
         var piece = Pieces.FirstOrDefault(p => p.Id == Payload.Id);

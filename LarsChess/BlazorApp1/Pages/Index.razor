@@ -9,42 +9,42 @@
 
 
         <BoardRow>
-            @foreach (var pos in BoardPositions.Where(b => b[0] == 0))
+            @foreach (var pos in BoardPositions.Where(b => b.y == 0))
             {
                 <Square Position="@pos" />
             }
         </BoardRow>
 
     <BoardRow>
-        @foreach (var pos in BoardPositions.Where(b => b[0] == 1))
+        @foreach (var pos in BoardPositions.Where(b => b.y == 1))
         {
             <Square Position="@pos" />
         }
     </BoardRow>
 
     <BoardRow>
-        @foreach (var pos in BoardPositions.Where(b => b[0] == 2))
+        @foreach (var pos in BoardPositions.Where(b => b.y == 2))
         {
             <Square Position="@pos" />
         }
     </BoardRow>
 
     <BoardRow>
-        @foreach (var pos in BoardPositions.Where(b => b[0] == 3))
+        @foreach (var pos in BoardPositions.Where(b => b.y == 3))
         {
             <Square Position="@pos" />
         }
     </BoardRow>
 
     <BoardRow>
-            @foreach (var pos in BoardPositions.Where(b => b[0] == 4))
+            @foreach (var pos in BoardPositions.Where(b => b.y == 4))
             {
                 <Square Position="@pos" />
             }
         </BoardRow>
 
     <BoardRow>
-        @foreach (var pos in BoardPositions.Where(b => b[0] == 5))
+        @foreach (var pos in BoardPositions.Where(b => b.y == 5))
         {
             <Square Position="@pos" />
         }
@@ -52,14 +52,14 @@
 
 
     <BoardRow>
-        @foreach (var pos in BoardPositions.Where(b => b[0] == 6))
+        @foreach (var pos in BoardPositions.Where(b => b.y == 6))
         {
             <Square Position="@pos" />
         }
     </BoardRow>
 
     <BoardRow>
-            @foreach (var pos in BoardPositions.Where(b => b[0] == 7))
+            @foreach (var pos in BoardPositions.Where(b => b.y == 7))
             {
                 <Square Position="@pos" />
             }
@@ -74,7 +74,7 @@
 
 @code{
     string lastMove = "";
-    List<int[]> BoardPositions = new List<int[]>();
+    List<(int x, int y)> BoardPositions = new List<(int x, int y)>();
 
     List<JobModel> Jobs = new List<JobModel>();
     List<PieceModel> Pieces = new List<PieceModel>();
@@ -89,21 +89,17 @@
     {
 
 
-        for(int i=0; i<8; i++)
+        for(int y=0; y<8; y++)
         {
-
-
-            for(int j = 0; j<8; j++)
+            for(int x = 0; x<8; x++)
             {
-                var pos = (i, j);
+                var pos = (x, y);
 
                 if(Chessrules.StartingPositions.TryGetValue(pos, out var type))
                 {
-                    Pieces.Add(new PieceModel(new[] { pos.j, pos.i }, Guid.NewGuid().ToString(), type.Item1, type.Item2));
+                    Pieces.Add(new PieceModel((pos.x, pos.y), Guid.NewGuid().ToString(), type.Item1, type.Item2));
                 }
-
-                
-                BoardPositions.Add(new[] { i, j });
+                BoardPositions.Add((x,y));
             }
         }
         Jobs.Add(
@@ -118,9 +114,9 @@
     void HandlePieceMoved(PieceModel model)
     {
 
-        lastMove = $"{model.OrgPosition[0]} {model.OrgPosition[1]} -> {model.Position[0]} {model.Position[1]}";
-        model.OrgPosition[0] = model.Position[0];
-        model.OrgPosition[1] = model.Position[1];
+        lastMove = $"{model.OrgPosition.x} {model.OrgPosition.y} -> {model.Position.x} {model.Position.y}";
+        model.OrgPosition = model.Position;
+    
     }
 
     void HandleStatusUpdated(JobModel updatedJob)
