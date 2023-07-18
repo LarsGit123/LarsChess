@@ -1,4 +1,5 @@
 ﻿using BlazorApp1.Models;
+using System.Reflection;
 
 namespace BlazorApp1.Data
 {
@@ -41,7 +42,7 @@ namespace BlazorApp1.Data
             { (7,7), (PieceClass.Rook, Colour.Black) },
         };
     
-        public static List<(int,int)> GetLegalMoves(PieceModel model, List<PieceModel> allPieces)
+        public static List<(int x,int y)> GetLegalMoves(PieceModel model, List<PieceModel> allPieces)
         {
             if (model is null)
                 return new List<(int, int)>();
@@ -201,7 +202,23 @@ namespace BlazorApp1.Data
                     moves.Add((payload.Position.x - 1, payload.Position.y + moveDirection));
                 }
             }
+
+            moves = moves.Where(pos=>MoveIsNotCausingCheck(pos, payload, allPieces)).ToList();
             return moves;
+        }
+
+        private static bool MoveIsNotCausingCheck((int, int) pos, PieceModel payload, List<PieceModel> allPieces)
+        {
+
+            //todo: verify... maybe buggy
+            var kingPos = (payload.PieceClass == PieceClass.King)
+                ? pos
+                : allPieces.First(p => p.Colour == payload.Colour && p.PieceClass == PieceClass.King).Position;
+
+            var newBoardPositions = allPieces.Where(p => p.Position != payload.Position).ToList();
+            newBoardPositions.Add(payload.Clone(pos));
+            var opponentPices = allPieces.Where(p => p.Colour != payload.Colour && p.PieceClass != PieceClass.King);
+            return opponentPices.Any(piece => GetLegalMoves(piece, newBoardPositions).Any(p => p == kingPos));
         }
 
         private static List<(int, int)> GetKingMoves(PieceModel payload, List<PieceModel> allPieces)

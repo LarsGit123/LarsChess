@@ -19,6 +19,11 @@
             PieceClass = pieceClass;
             Colour = colour;
         }
+
+        public PieceModel Clone((int,int) newPosition)
+        {
+            return new PieceModel(newPosition, this.Id, this.PieceClass, this.Colour);
+        }
     }
     
 }
