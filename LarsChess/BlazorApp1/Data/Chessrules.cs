@@ -46,18 +46,24 @@ namespace BlazorApp1.Data
             if (model is null)
                 return new List<(int, int)>();
 
-            
             var p = model.Position;
             switch(model.PieceClass)
             {
                 case PieceClass.King:
-                    return GetKingMoves(p);
+                    return GetKingMoves(model, allPieces);
                 case PieceClass.Pawn:
                     return GetPawnMoves(model, allPieces);
+                case PieceClass.Rook:
+                    return GetRookMoves(model, allPieces);
                 default:
                     return new List<(int, int)>();
             }
             
+        }
+
+        private static List<(int, int)> GetRookMoves(PieceModel model, List<PieceModel> allPieces)
+        {
+            throw new NotImplementedException();
         }
 
         private static List<(int, int)> GetPawnMoves(PieceModel payload, List<PieceModel> allPieces)
@@ -108,19 +114,28 @@ namespace BlazorApp1.Data
             return moves;
         }
 
-        private static List<(int, int)> GetKingMoves((int x, int y) p)
+        private static List<(int, int)> GetKingMoves(PieceModel payload, List<PieceModel> allPieces)
         {
             var moves = new List<(int, int)>();
-            if (p.x < 7 && p.y > 1) moves.Add((p.x + 1, p.y - 1));
-            if (p.x < 7) moves.Add((p.x + 1, p.y));
-            if (p.x < 7 && p.y < 7) moves.Add((p.x + 1, p.y + 1));
+            var p = payload.Position;
+            if (p.x < 7 && p.y > 1 && !allPieces.Any(piece => piece.PieceClass == payload.PieceClass && piece.Position == (p.x + 1, p.y - 1))) 
+                moves.Add((p.x + 1, p.y - 1));
+            if (p.x < 7 && !allPieces.Any(piece => piece.PieceClass == payload.PieceClass && piece.Position == (p.x + 1, p.y ))) 
+                moves.Add((p.x + 1, p.y));
+            if (p.x < 7 && p.y < 7 && !allPieces.Any(piece => piece.PieceClass == payload.PieceClass && piece.Position == (p.x + 1, p.y + 1))) 
+                moves.Add((p.x + 1, p.y + 1));
 
-            if (p.x > 0 && p.y > 1) moves.Add((p.x - 1, p.y - 1));
-            if (p.x > 0) moves.Add((p.x - 1, p.y));
-            if (p.x > 0 && p.y < 7) moves.Add((p.x - 1, p.y + 1));
+            if (p.x > 0 && p.y > 1 && !allPieces.Any(piece => piece.PieceClass == payload.PieceClass && piece.Position == (p.x - 1, p.y - 1))) 
+                moves.Add((p.x - 1, p.y - 1));
+            if (p.x > 0 && !allPieces.Any(piece => piece.PieceClass == payload.PieceClass && piece.Position == (p.x - 1, p.y))) 
+                moves.Add((p.x - 1, p.y));
+            if (p.x > 0 && p.y < 7 && !allPieces.Any(piece => piece.PieceClass == payload.PieceClass && piece.Position == (p.x - 1, p.y + 1))) 
+                moves.Add((p.x - 1, p.y + 1));
 
-            if (p.y < 7) moves.Add((p.x, p.y + 1));
-            if (p.y > 1) moves.Add((p.x, p.y - 1));
+            if (p.y < 7 && !allPieces.Any(piece => piece.PieceClass == payload.PieceClass && piece.Position == (p.x, p.y + 1))) 
+                moves.Add((p.x, p.y + 1));
+            if (p.y > 1 && !allPieces.Any(piece => piece.PieceClass == payload.PieceClass && piece.Position == (p.x, p.y - 1))) 
+                moves.Add((p.x, p.y - 1));
             return moves;
         }
     }
