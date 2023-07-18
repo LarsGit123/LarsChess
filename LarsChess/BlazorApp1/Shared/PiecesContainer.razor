@@ -1,4 +1,5 @@
-﻿@using BlazorApp1.Models;
+﻿@using BlazorApp1.Data;
+@using BlazorApp1.Models;
 <CascadingValue Value="this">
     @ChildContent
 </CascadingValue>
@@ -7,10 +8,31 @@
 
 @code {
     [Parameter] public List<PieceModel> Pieces { get; set; }
+    [Parameter] public List<SquareModel> Squares { get; set; }
     [Parameter] public EventCallback<PieceModel> OnStatusUpdated { get; set; }
+    [Parameter] public EventCallback<PieceModel> OnRefresh { get; set; }
     [Parameter] public RenderFragment ChildContent { get; set; }
     public PieceModel Payload { get; set; }
 
+    public async Task VisualizeLegalMoves(PieceModel piece)
+    {
+        var legalMoves = Chessrules.GetLegalMoves(piece);
+        var legalSquares = Squares.Where(s => legalMoves.Contains(s.Position));
+        if (legalSquares?.Any() ?? false)
+        {
+            foreach(var square in legalSquares)
+            {
+                square.IsLegalSquare = true;
+            }
+        }
+        var illegalSquares = Squares.Where(s => !legalMoves.Contains(s.Position));
+        foreach (var square in illegalSquares)
+        {
+            square.IsLegalSquare = false;
+        }
+
+        OnRefresh.InvokeAsync().Start();
+    }
 
 
     public async Task UpdatePieceAsync((int x, int y) newPos)

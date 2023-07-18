@@ -18,7 +18,7 @@
 @code {
 
     [CascadingParameter] PiecesContainer Container { get; set; }
-    [Parameter] public (int x, int y) Position { get; set; }
+    [Parameter] public SquareModel Model { get; set; }
     [Parameter] public JobStatuses[] AllowedStatuses { get; set; }
     List<PieceModel> pieces = new List<PieceModel>();
     string dropClass = "";
@@ -26,7 +26,11 @@
 
     protected override void OnParametersSet()
     {
-        if((Position.x + Position.y) % 2 == 0)
+        if (Model.IsLegalSquare)
+        {
+            squareType = "square-orange";
+        }
+        else if((Model.Position.x + Model.Position.y) % 2 == 0)
         {
             squareType = "square-black";
         }
@@ -35,16 +39,16 @@
             squareType = "square-white";
         }
         pieces.Clear();
-        pieces.AddRange(Container.Pieces.Where(p => p.Position == Position));
+        pieces.AddRange(Container.Pieces.Where(p => p.Position == Model.Position));
     }
 
     private void HandleDragEnter()
     {
-        if (Position == Container.Payload.Position) return;
+        if (Model.Position == Container.Payload.Position) return;
 
-        if (Container.Pieces.Any(p => p.Position == Position))
+        if (Container.Pieces.Any(p => p.Position == Model.Position))
         {
-            var piece = Container.Pieces.First(p => p.Position == Position);
+            var piece = Container.Pieces.First(p => p.Position == Model.Position);
 
             dropClass = "no-drop";
         }
@@ -64,13 +68,14 @@
 
         dropClass = "";
 
-        var legalDropSquare = Chessrules.GetLegalMoves(Container.Payload).Any(r => r == Position);
+        var legalDropSquare = Chessrules.GetLegalMoves(Container.Payload).Any(r => r == Model.Position);
         if (!legalDropSquare)
         {
-            
+            //todo: uncomment when rules are complete 
+            // return; 
         }
-        if (Container.Pieces.Any(p => p.Position == Position)) return;
+        if (Container.Pieces.Any(p => p.Position == Model.Position)) return;
 
-        await Container.UpdatePieceAsync(Position);
+        await Container.UpdatePieceAsync(Model.Position);
     }
 }

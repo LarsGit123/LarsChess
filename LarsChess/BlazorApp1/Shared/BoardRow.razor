@@ -1,8 +1,17 @@
-﻿<div class="boardrow">
-<CascadingValue Value="this">
-    @ChildContent
-</CascadingValue>
+﻿<div class="boardrow align-items-center">
+
+    @if(RowNum > -1)
+    {
+        <div class="col" style="width:10px; text-align:center;">
+            <strong>@(RowNum+1)</strong>
+        </div>
+
+    }
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
 </div>
 @code {
+    [Parameter] public int RowNum { get; set; } = -1;
     [Parameter] public RenderFragment ChildContent { get; set; }
 }

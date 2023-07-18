@@ -147,6 +147,9 @@ a, .btn-link {
     margin: 1px;    
 }
 
+.square-orange {
+    background-color:orange;
+}
 
 .square-black{
     background-color:deepskyblue;
@@ -156,7 +159,8 @@ a, .btn-link {
     background-color:lightblue;
 }
 
-.boardrow{        
+.boardrow{    
+    align-items:center;
     display:flex;
     flex-direction:row;
 }

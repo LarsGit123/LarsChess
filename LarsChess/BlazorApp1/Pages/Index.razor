@@ -3,80 +3,90 @@
 @using BlazorApp1.Models;
 
 <PageTitle>Sjakk</PageTitle>
+ 
+<PiecesContainer Pieces = "Pieces" Squares="Squares" OnStatusUpdated="HandlePieceMoved" OnRefresh="Refresh" >
 
-<PiecesContainer Pieces = "Pieces" OnStatusUpdated="HandlePieceMoved">
+    @if (Xcoords != null)
+    {
+        <div class="boardrow">
 
-
-
-        <BoardRow>
-            @foreach (var pos in BoardPositions.Where(b => b.y == 0))
+            @foreach (var x in Xcoords)
             {
-                <Square Position="@pos" />
+                <div class="square" style="height:1.5rem;">
+                    <p>@x</p>
+                </div>
+            }
+        </div>
+    }
+
+    <BoardRow RowNum="0">
+        @foreach (var model in Squares.Where(b => b.Position.y == 0))
+        {
+            <Square Model="@model" />
+        }
+    </BoardRow>
+
+    <BoardRow RowNum="1">
+        @foreach (var model in Squares.Where(b => b.Position.y == 1))
+        {
+            <Square Model="@model" />
+        }
+    </BoardRow>
+
+    <BoardRow RowNum="2">
+        @foreach (var model in Squares.Where(b => b.Position.y == 2))
+        {
+            <Square Model="@model" />
+        }
+    </BoardRow>
+
+    <BoardRow RowNum="3">
+        @foreach (var model in Squares.Where(b => b.Position.y == 3))
+        {
+            <Square Model="@model" />
+        }
+    </BoardRow>
+
+    <BoardRow RowNum="4">
+        @foreach (var model in Squares.Where(b => b.Position.y == 4))
+            {
+                <Square Model="@model" />
             }
         </BoardRow>
 
-    <BoardRow>
-        @foreach (var pos in BoardPositions.Where(b => b.y == 1))
+    <BoardRow RowNum="5">
+        @foreach (var model in Squares.Where(b => b.Position.y == 5))
         {
-            <Square Position="@pos" />
+            <Square Model="@model" />
         }
     </BoardRow>
 
-    <BoardRow>
-        @foreach (var pos in BoardPositions.Where(b => b.y == 2))
+
+    <BoardRow RowNum="6">
+        @foreach (var model in Squares.Where(b => b.Position.y == 6))
         {
-            <Square Position="@pos" />
+            <Square Model="@model" />
         }
     </BoardRow>
 
-    <BoardRow>
-        @foreach (var pos in BoardPositions.Where(b => b.y == 3))
-        {
-            <Square Position="@pos" />
-        }
-    </BoardRow>
-
-    <BoardRow>
-            @foreach (var pos in BoardPositions.Where(b => b.y == 4))
+    <BoardRow RowNum="7">
+        @foreach (var model in Squares.Where(b => b.Position.y == 7))
             {
-                <Square Position="@pos" />
+                <Square Model="@model" />
             }
         </BoardRow>
-
-    <BoardRow>
-        @foreach (var pos in BoardPositions.Where(b => b.y == 5))
-        {
-            <Square Position="@pos" />
-        }
-    </BoardRow>
-
-
-    <BoardRow>
-        @foreach (var pos in BoardPositions.Where(b => b.y == 6))
-        {
-            <Square Position="@pos" />
-        }
-    </BoardRow>
-
-    <BoardRow>
-            @foreach (var pos in BoardPositions.Where(b => b.y == 7))
-            {
-                <Square Position="@pos" />
-            }
-        </BoardRow>
-
-
-        
 </PiecesContainer>
 
 <strong>last move @lastMove</strong>
 
 
 @code{
+    string[] Xcoords = new[] {"A", "B", "C", "D", "E", "F", "G", "H" };
     string lastMove = "";
-    List<(int x, int y)> BoardPositions = new List<(int x, int y)>();
+    //  List<(int x, int y)> BoardPositions = new List<(int x, int y)>();
 
     List<JobModel> Jobs = new List<JobModel>();
+    List<SquareModel> Squares = new List<SquareModel>();
     List<PieceModel> Pieces = new List<PieceModel>();
     string lastUpdatedJob = "";
 
@@ -99,7 +109,8 @@
                 {
                     Pieces.Add(new PieceModel((pos.x, pos.y), Guid.NewGuid().ToString(), type.Item1, type.Item2));
                 }
-                BoardPositions.Add((x,y));
+                Squares.Add(new SquareModel((x, y)));
+                //BoardPositions.Add((x,y));
             }
         }
         Jobs.Add(
@@ -113,11 +124,14 @@
 
     void HandlePieceMoved(PieceModel model)
     {
-
+        if(model is null)
+        {
+            return;
+        }
         lastMove = $"{model.OrgPosition.x} {model.OrgPosition.y} -> {model.Position.x} {model.Position.y}";
         model.OrgPosition = model.Position;
-    
     }
+
 
     void HandleStatusUpdated(JobModel updatedJob)
     {

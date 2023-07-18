@@ -1,6 +1,6 @@
 ﻿@using BlazorApp1.Models;
 
-<div class="draggable-piece piece" draggable="true" @ondragstart="@(() => HandleDragStart(Model))">
+<div class="draggable-piece piece" draggable="true" @ondragstart="@(() => HandleDragStart(Model))" @onclick="HandleClick">
     @if(Model != null)
     {
         <i class="@fontawesomeClass(Model.PieceClass) @colourClass(Model.Colour)"></i>
@@ -16,6 +16,11 @@
     {        
         Container.Payload = this.Model;
     }    
+
+    private void HandleClick()
+    {
+        Container.VisualizeLegalMoves(Model);
+    }
 
     private string colourClass(Colour colour)
     {
