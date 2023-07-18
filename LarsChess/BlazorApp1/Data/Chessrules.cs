@@ -68,7 +68,25 @@ namespace BlazorApp1.Data
             var moves = new List<(int, int)>();
             if (payload.Position.y <7 && payload.Position.y  > 0)
             {
-                moves.Add((payload.Position.x, payload.Position.y + moveDirection));
+                if (!allPieces.Any(p => p.Position.y == payload.Position.y + moveDirection))
+                {
+                    moves.Add((payload.Position.x, payload.Position.y + moveDirection));
+
+                    //first move
+                    if (!allPieces.Any(p => p.Position.y == payload.Position.y + moveDirection * 2))
+                    {
+                        if (payload.Colour == Colour.White && payload.Position.y == 1)
+                        {
+                            moves.Add((payload.Position.x, payload.Position.y + moveDirection * 2));
+
+                        }
+                        else if (payload.Colour == Colour.Black && payload.Position.y == 6)
+                        {
+                            moves.Add((payload.Position.x, payload.Position.y + moveDirection * 2));
+
+                        }
+                    }
+                }
 
                 //attack moves:
                 if (allPieces.Where(p=> 
