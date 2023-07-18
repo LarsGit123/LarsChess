@@ -63,7 +63,97 @@ namespace BlazorApp1.Data
 
         private static List<(int, int)> GetRookMoves(PieceModel model, List<PieceModel> allPieces)
         {
-            throw new NotImplementedException();
+            //x-right
+            var rookXright = model.Position.x;
+            while(rookXright < 7)
+            {
+
+                if(allPieces.FirstOrDefault(p => p.Position == (rookXright +1, model.Position.y)) is PieceModel xRightModel)
+                {
+                    //same colour
+                    if(xRightModel.Colour == model.Colour)
+                    {
+                        break;
+                    }
+                    else 
+                    {
+                        rookXright++;
+                        break; 
+                    }
+                }
+                rookXright++;
+            }
+
+            //x-left
+            var rookXLeft = model.Position.x;
+            while (rookXLeft > 0)
+            {
+                if (allPieces.FirstOrDefault(p => p.Position == (rookXright - 1, model.Position.y)) is PieceModel xLeftModel)
+                {
+                    //same colour
+                    if (xLeftModel.Colour == model.Colour)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        rookXLeft--;
+                        break;
+                    }
+                }
+                rookXLeft--;
+            }
+
+            var rangeX = Enumerable.Range(rookXLeft,rookXright-rookXLeft+1).Where(r => r != model.Position.x);
+
+            //y-up
+            var rookYup = model.Position.y;
+            while (rookYup < 7)
+            {
+                
+                if (allPieces.FirstOrDefault(p => p.Position == (model.Position.x,rookYup + 1 )) is PieceModel rookYupModel)
+                {
+                    //same colour
+                    if (rookYupModel.Colour == model.Colour)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        rookYup++;
+                        break;
+                    }
+                }
+                rookYup++;
+            }
+
+            //y-down
+            var rookYdown = model.Position.y;
+            while (rookYdown > 0)
+            {
+                
+                if (allPieces.FirstOrDefault(p => p.Position == (model.Position.x, rookYdown - 1)) is PieceModel ydownModel)
+                {
+                    //same colour
+                    if (ydownModel.Colour == model.Colour)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        rookYdown--;
+                        break;
+                    }
+                }
+                rookYdown--;
+            }
+
+            var rangeY = Enumerable.Range(rookYdown, rookYup-rookYdown+1).Where(r=> r != model.Position.y);
+            var legal = new List<(int x , int y)>();
+            legal.AddRange(rangeX.Select(x => (x, model.Position.y)));
+            legal.AddRange(rangeY.Select(y=> (model.Position.x, y)));
+            
+            return legal;
         }
 
         private static List<(int, int)> GetPawnMoves(PieceModel payload, List<PieceModel> allPieces)
@@ -74,7 +164,7 @@ namespace BlazorApp1.Data
             var moves = new List<(int, int)>();
             if (payload.Position.y <7 && payload.Position.y  > 0)
             {
-                if (!allPieces.Any(p => p.Position.y == payload.Position.y + moveDirection))
+                if (!allPieces.Any(p => p.Position.y == payload.Position.y + moveDirection && p.Position.x == payload.Position.x))
                 {
                     moves.Add((payload.Position.x, payload.Position.y + moveDirection));
 
@@ -118,25 +208,30 @@ namespace BlazorApp1.Data
         {
             var moves = new List<(int, int)>();
             var p = payload.Position;
-            if (p.x < 7 && p.y > 1 && !allPieces.Any(piece => piece.PieceClass == payload.PieceClass && piece.Position == (p.x + 1, p.y - 1))) 
+            if (p.x < 7 && p.y > 1 && PositionIsFree(payload, allPieces, (p.x + 1, p.y - 1))) 
                 moves.Add((p.x + 1, p.y - 1));
-            if (p.x < 7 && !allPieces.Any(piece => piece.PieceClass == payload.PieceClass && piece.Position == (p.x + 1, p.y ))) 
+            if (p.x < 7 && PositionIsFree(payload, allPieces, (p.x + 1, p.y ))) 
                 moves.Add((p.x + 1, p.y));
-            if (p.x < 7 && p.y < 7 && !allPieces.Any(piece => piece.PieceClass == payload.PieceClass && piece.Position == (p.x + 1, p.y + 1))) 
+            if (p.x < 7 && p.y < 7 && PositionIsFree(payload, allPieces, (p.x + 1, p.y + 1))) 
                 moves.Add((p.x + 1, p.y + 1));
 
-            if (p.x > 0 && p.y > 1 && !allPieces.Any(piece => piece.PieceClass == payload.PieceClass && piece.Position == (p.x - 1, p.y - 1))) 
+            if (p.x > 0 && p.y > 1 && PositionIsFree(payload, allPieces, (p.x - 1, p.y - 1))) 
                 moves.Add((p.x - 1, p.y - 1));
-            if (p.x > 0 && !allPieces.Any(piece => piece.PieceClass == payload.PieceClass && piece.Position == (p.x - 1, p.y))) 
+            if (p.x > 0 && PositionIsFree(payload, allPieces, (p.x - 1, p.y))) 
                 moves.Add((p.x - 1, p.y));
-            if (p.x > 0 && p.y < 7 && !allPieces.Any(piece => piece.PieceClass == payload.PieceClass && piece.Position == (p.x - 1, p.y + 1))) 
+            if (p.x > 0 && p.y < 7 && PositionIsFree(payload, allPieces, (p.x - 1, p.y + 1))) 
                 moves.Add((p.x - 1, p.y + 1));
 
-            if (p.y < 7 && !allPieces.Any(piece => piece.PieceClass == payload.PieceClass && piece.Position == (p.x, p.y + 1))) 
+            if (p.y < 7 && PositionIsFree(payload, allPieces, (p.x, p.y + 1))) 
                 moves.Add((p.x, p.y + 1));
-            if (p.y > 1 && !allPieces.Any(piece => piece.PieceClass == payload.PieceClass && piece.Position == (p.x, p.y - 1))) 
+            if (p.y > 1 && PositionIsFree(payload, allPieces, (p.x, p.y - 1))) 
                 moves.Add((p.x, p.y - 1));
             return moves;
+        }
+
+        private static bool PositionIsFree(PieceModel piece, List<PieceModel> allPieces, (int x, int y) p )
+        {
+            return allPieces.Any(a => a.PieceClass == piece.PieceClass && a.Position == p);
         }
     }
 }
