@@ -1,5 +1,6 @@
 ﻿@using BlazorApp1.Data;
 @using BlazorApp1.Models;
+@inject Chessrules rules;
 <CascadingValue Value="this">
     @ChildContent
 </CascadingValue>
@@ -16,7 +17,7 @@
 
     public async Task VisualizeLegalMoves(PieceModel piece)
     {
-        var legalMoves = Chessrules.GetLegalMoves(piece, Pieces);
+        var legalMoves = rules.GetLegalMoves(piece, Pieces, false);
         var legalSquares = Squares.Where(s => legalMoves.Contains(s.Position));
         if (legalSquares?.Any() ?? false)
         {

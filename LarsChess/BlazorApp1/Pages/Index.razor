@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using BlazorApp1.Data;
 @using BlazorApp1.Models;
+@inject Chessrules rules;
 
 <PageTitle>Sjakk</PageTitle>
  
@@ -105,7 +106,7 @@
             {
                 var pos = (x, y);
 
-                if(Chessrules.StartingPositions.TryGetValue(pos, out var type))
+                if(rules.StartingPositions.TryGetValue(pos, out var type))
                 {
                     Pieces.Add(new PieceModel((pos.x, pos.y), Guid.NewGuid().ToString(), type.Item1, type.Item2));
                 }

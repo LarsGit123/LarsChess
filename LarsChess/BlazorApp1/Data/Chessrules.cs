@@ -1,11 +1,12 @@
 ﻿using BlazorApp1.Models;
+using MethodTimer;
 using System.Reflection;
 
 namespace BlazorApp1.Data
 {
-    public static class Chessrules
+    public class Chessrules
     {
-        public static Dictionary<(int, int), (PieceClass, Colour)> StartingPositions { get; private set; } = new Dictionary<(int, int), (PieceClass, Colour)>
+        public Dictionary<(int, int), (PieceClass, Colour)> StartingPositions { get; private set; } = new Dictionary<(int, int), (PieceClass, Colour)>
         {
             { (0,0), (PieceClass.Rook, Colour.White) },
             { (1,0), (PieceClass.Bishop, Colour.White) },
@@ -41,28 +42,42 @@ namespace BlazorApp1.Data
             { (6,7), (PieceClass.Bishop, Colour.Black) },
             { (7,7), (PieceClass.Rook, Colour.Black) },
         };
-    
-        public static List<(int x,int y)> GetLegalMoves(PieceModel model, List<PieceModel> allPieces)
-        {
-            if (model is null)
-                return new List<(int, int)>();
 
+        [Time]
+        public List<(int x,int y)> GetLegalMoves(PieceModel model, List<PieceModel> allPieces, bool allowSelfCheck)
+        {
+            IEnumerable<(int, int)> moves;
+            if (model is null)
+                return new List<(int x, int y)>();
+            
             var p = model.Position;
             switch(model.PieceClass)
             {
                 case PieceClass.King:
-                    return GetKingMoves(model, allPieces);
+                    moves = GetKingMoves(model, allPieces);
+                    break;
                 case PieceClass.Pawn:
-                    return GetPawnMoves(model, allPieces);
+                    moves =  GetPawnMoves(model, allPieces);
+                    break;
                 case PieceClass.Rook:
-                    return GetRookMoves(model, allPieces);
+                    moves = GetRookMoves(model, allPieces);
+                    break;
                 default:
-                    return new List<(int, int)>();
+                    return new List<(int x, int y)>();
             }
-            
+            var legalMoves = allowSelfCheck
+                ? moves.ToList()
+                : moves.Where(pos => !MoveIsCheck(pos, model, allPieces)).ToList();
+
+            if(legalMoves.Count == 0 && !allowSelfCheck)
+            {
+
+            }
+            return legalMoves;
+
         }
 
-        private static List<(int, int)> GetRookMoves(PieceModel model, List<PieceModel> allPieces)
+        private IEnumerable<(int, int)> GetRookMoves(PieceModel model, List<PieceModel> allPieces)
         {
             //x-right
             var rookXright = model.Position.x;
@@ -157,7 +172,7 @@ namespace BlazorApp1.Data
             return legal;
         }
 
-        private static List<(int, int)> GetPawnMoves(PieceModel payload, List<PieceModel> allPieces)
+        private List<(int, int)> GetPawnMoves(PieceModel payload, List<PieceModel> allPieces)
         {
             var moveDirection = (payload.Colour == Colour.White)
                 ? 1
@@ -202,15 +217,15 @@ namespace BlazorApp1.Data
                     moves.Add((payload.Position.x - 1, payload.Position.y + moveDirection));
                 }
             }
-
-            moves = moves.Where(pos=>MoveIsNotCausingCheck(pos, payload, allPieces)).ToList();
             return moves;
         }
 
-        private static bool MoveIsNotCausingCheck((int, int) pos, PieceModel payload, List<PieceModel> allPieces)
+
+    
+        private bool MoveIsCheck((int, int) pos, PieceModel payload, List<PieceModel> allPieces)
         {
 
-            //todo: verify... maybe buggy
+            //todo: verify... maybe buggy. Checking all pieces not nescessary
             var kingPos = (payload.PieceClass == PieceClass.King)
                 ? pos
                 : allPieces.First(p => p.Colour == payload.Colour && p.PieceClass == PieceClass.King).Position;
@@ -218,10 +233,13 @@ namespace BlazorApp1.Data
             var newBoardPositions = allPieces.Where(p => p.Position != payload.Position).ToList();
             newBoardPositions.Add(payload.Clone(pos));
             var opponentPices = allPieces.Where(p => p.Colour != payload.Colour && p.PieceClass != PieceClass.King);
-            return opponentPices.Any(piece => GetLegalMoves(piece, newBoardPositions).Any(p => p == kingPos));
+            var isCheck = opponentPices.Any(piece => GetLegalMoves(piece, newBoardPositions, true).Any(p => p == kingPos));
+           // var causingCheck = opponentPices.Select(piece => (piece, GetLegalMoves(piece, newBoardPositions, true).Any(p => p == kingPos))).Where(i => i.Item2);
+
+            return isCheck;
         }
 
-        private static List<(int, int)> GetKingMoves(PieceModel payload, List<PieceModel> allPieces)
+        private List<(int, int)> GetKingMoves(PieceModel payload, List<PieceModel> allPieces)
         {
             var moves = new List<(int, int)>();
             var p = payload.Position;
@@ -246,7 +264,7 @@ namespace BlazorApp1.Data
             return moves;
         }
 
-        private static bool PositionIsFree(PieceModel piece, List<PieceModel> allPieces, (int x, int y) p )
+        private bool PositionIsFree(PieceModel piece, List<PieceModel> allPieces, (int x, int y) p )
         {
             return allPieces.Any(a => a.PieceClass == piece.PieceClass && a.Position == p);
         }

@@ -1,6 +1,6 @@
 ﻿@using BlazorApp1.Data;
 @using BlazorApp1.Models;
-
+@inject Chessrules rules;
 
     <div class="square @squareType dropzone @dropClass"
         ondragover="event.preventDefault();"
@@ -67,15 +67,16 @@
     {
 
         dropClass = "";
-
-        var legalDropSquare = Chessrules.GetLegalMoves(Container.Payload, Container.Pieces).Any(r => r == Model.Position);
+        var legalMoves = rules.GetLegalMoves(Container.Payload, Container.Pieces, false);
+        var legalDropSquare = legalMoves.Any(r => r == Model.Position);
         if (!legalDropSquare)
         {
-            //todo: uncomment when rules are complete 
-            // return; 
+            dropClass = "no-drop";
         }
-        if (Container.Pieces.Any(p => p.Position == Model.Position)) return;
-
-        await Container.UpdatePieceAsync(Model.Position);
+        //if (Container.Pieces.Any(p => p.Position == Model.Position)) return;
+        else
+        {
+            await Container.UpdatePieceAsync(Model.Position);
+        }
     }
 }
