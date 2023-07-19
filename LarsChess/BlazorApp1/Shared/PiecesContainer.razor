@@ -1,6 +1,11 @@
 ﻿@using BlazorApp1.Data;
 @using BlazorApp1.Models;
 @inject Chessrules rules;
+
+@foreach(var piece in CapturedPieces)
+{
+    <Piece Model="piece" />
+}
 <CascadingValue Value="this">
     @ChildContent
 </CascadingValue>
@@ -8,6 +13,7 @@
 
 
 @code {
+    public List<PieceModel> CapturedPieces { get; private set; } = new List<PieceModel>();
     [Parameter] public List<PieceModel> Pieces { get; set; }
     [Parameter] public List<SquareModel> Squares { get; set; }
     [Parameter] public EventCallback<PieceModel> OnStatusUpdated { get; set; }
@@ -38,6 +44,13 @@
 
     public async Task UpdatePieceAsync((int x, int y) newPos)
     {
+        
+        //capture piece
+        if (Pieces.FirstOrDefault(p => p.Position == newPos) is PieceModel capturedPiece)
+        {
+            CapturedPieces.Add(capturedPiece);
+            Pieces.Remove(capturedPiece);
+        }
         Payload.Position = newPos;
         var piece = Pieces.FirstOrDefault(p => p.Id == Payload.Id);
         if(piece != null)
