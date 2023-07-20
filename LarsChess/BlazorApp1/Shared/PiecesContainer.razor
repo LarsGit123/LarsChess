@@ -19,7 +19,7 @@
     [Parameter] public EventCallback<PieceModel> OnStatusUpdated { get; set; }
     [Parameter] public EventCallback<PieceModel> OnRefresh { get; set; }
     [Parameter] public RenderFragment ChildContent { get; set; }
-    public PieceModel Payload { get; set; }
+    public string Payload { get; set; }
 
     public async Task VisualizeLegalMoves(PieceModel piece)
     {
@@ -44,19 +44,23 @@
 
     public async Task UpdatePieceAsync((int x, int y) newPos)
     {
-        
+
         //capture piece
         if (Pieces.FirstOrDefault(p => p.Position == newPos) is PieceModel capturedPiece)
         {
             CapturedPieces.Add(capturedPiece);
             Pieces.Remove(capturedPiece);
         }
-        Payload.Position = newPos;
-        var piece = Pieces.FirstOrDefault(p => p.Id == Payload.Id);
+        var piece = Pieces.FirstOrDefault(p => p.Id == Payload);
         if(piece != null)
         {
-            piece.Position = Payload.Position;
+            piece.Position = newPos;
         }
-        await OnStatusUpdated.InvokeAsync(Payload);
+        await OnStatusUpdated.InvokeAsync(piece);
+    }
+
+    public PieceModel GetCurrentPayload()
+    {
+        return this.Pieces.First(p => p.Id == Payload);
     }
 }

@@ -1,25 +1,33 @@
 ﻿@using BlazorApp1.Models;
 
-<div class="draggable-piece piece" draggable="true" @ondragstart="@(() => HandleDragStart(Model))" @onclick="HandleClick">
+<div class="draggable-piece piece" draggable="true" @ondragstart="@(() => HandleDragStart(Model))" @onclick="HandleClick" @ondragend="HandleDragEnd">
     @if(Model != null)
     {
-        <i class="@fontawesomeClass(Model.PieceClass) @colourClass(Model.Colour)"></i>
-        //<h4>@Model.PieceClass</h4>
+        <div style="background-color:@testcolor;">
+            <i class="@fontawesomeClass(Model.PieceClass) @colourClass(Model.Colour)"></i>
+        </div>
     }
 </div>
 @code {
     [Parameter] public PieceModel Model { get; set; }
     [CascadingParameter] PiecesContainer Container { get; set; }
     [Parameter] public EventCallback RefreshPreviousPosition { get; set; }
-
+    public string testcolor { get; set; } = "yellow";
     private void HandleDragStart(PieceModel selectedJob)
     {        
-        Container.Payload = this.Model;
+        Container.Payload = this.Model.Id;
     }    
+
+    private void HandleDragEnd()
+    {
+        testcolor = "red";
+    }
 
     private async Task HandleClick()
     {
+        testcolor = "red";
         await Container.VisualizeLegalMoves(Model);
+
     }
 
     private string colourClass(Colour colour)

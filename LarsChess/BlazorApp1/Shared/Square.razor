@@ -43,7 +43,7 @@
 
     private void HandleDragEnter()
     {
-        if (Model.Position == Container.Payload.Position) return;
+        if (Model.Position == Container.GetCurrentPayload().Position) return;
 
         if (Container.Pieces.Any(p => p.Position == Model.Position))
         {
@@ -64,7 +64,7 @@
     {
 
         dropClass = "";
-        var legalMoves = rules.GetLegalMoves(Container.Payload, Container.Pieces, false);
+        var legalMoves = rules.GetLegalMoves(Container.GetCurrentPayload(), Container.Pieces, false);
         var legalDropSquare = legalMoves.Any(r => r == Model.Position);
         if (!legalDropSquare)
         {
@@ -79,4 +79,5 @@
 
         }
     }
+    
 }
