@@ -19,7 +19,6 @@
 
     [CascadingParameter] PiecesContainer Container { get; set; }
     [Parameter] public SquareModel Model { get; set; }
-    [Parameter] public JobStatuses[] AllowedStatuses { get; set; }
     List<PieceModel> pieces = new List<PieceModel>();
     string dropClass = "";
     string squareType = "";
@@ -48,8 +47,6 @@
 
         if (Container.Pieces.Any(p => p.Position == Model.Position))
         {
-            var piece = Container.Pieces.First(p => p.Position == Model.Position);
-
             dropClass = "no-drop";
         }
         else
@@ -73,10 +70,13 @@
         {
             dropClass = "no-drop";
         }
-        //if (Container.Pieces.Any(p => p.Position == Model.Position)) return;
         else
         {
             await Container.UpdatePieceAsync(Model.Position);
+            pieces = new List<PieceModel>();
+            StateHasChanged();
+            pieces.AddRange(Container.Pieces.Where(p => p.Position == Model.Position));
+
         }
     }
 }

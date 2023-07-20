@@ -131,6 +131,7 @@
         }
         lastMove = $"{model.OrgPosition.x} {model.OrgPosition.y} -> {model.Position.x} {model.Position.y}";
         model.OrgPosition = model.Position;
+        StateHasChanged();
     }
 
 

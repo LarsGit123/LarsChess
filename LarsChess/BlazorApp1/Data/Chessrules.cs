@@ -69,10 +69,6 @@ namespace BlazorApp1.Data
                 ? moves.ToList()
                 : moves.Where(pos => !MoveIsCheck(pos, model, allPieces)).ToList();
 
-            if(legalMoves.Count == 0 && !allowSelfCheck)
-            {
-
-            }
             return legalMoves;
 
         }
