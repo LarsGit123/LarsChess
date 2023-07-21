@@ -20,11 +20,11 @@ jobs:
         include-prerelease: True
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
     - name: Restore
-      run: dotnet restore ChessBoardGui\ChessBoardGui.csproj
+      run: dotnet restore ${{ github.workspace }}\ChessBoardGui\ChessBoardGui.csproj
     - name: Build
-      run: dotnet build ChessBoardGui\ChessBoardGui.csproj --configuration ${{ env.CONFIGURATION }} --no-restore
+      run: dotnet build ${{ github.workspace }}\ChessBoardGui\ChessBoardGui.csproj --configuration ${{ env.CONFIGURATION }} --no-restore
     - name: Publish
-      run: dotnet publish ChessBoardGui\ChessBoardGui.csproj --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+      run: dotnet publish ${{ github.workspace }}\ChessBoardGui\ChessBoardGui.csproj --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
     - name: Publish Artifacts
       uses: actions/upload-artifact@v3
       with:
