@@ -9,12 +9,12 @@ namespace BlazorApp1.Data
         public Dictionary<(int, int), (PieceClass, Colour)> StartingPositions { get; private set; } = new Dictionary<(int, int), (PieceClass, Colour)>
         {
             { (0,0), (PieceClass.Rook, Colour.White) },
-            { (1,0), (PieceClass.Bishop, Colour.White) },
-            { (2,0), (PieceClass.Knight, Colour.White) },
+            { (1,0), (PieceClass.Knight, Colour.White) },
+            { (2,0), (PieceClass.Bishop, Colour.White) },
             { (3,0), (PieceClass.Queen, Colour.White) },
             { (4,0), (PieceClass.King, Colour.White) },
-            { (5,0), (PieceClass.Knight, Colour.White) },
-            { (6,0), (PieceClass.Bishop, Colour.White) },
+            { (5,0), (PieceClass.Bishop, Colour.White) },
+            { (6,0), (PieceClass.Knight, Colour.White) },
             { (7,0), (PieceClass.Rook, Colour.White) },
             { (0,1), (PieceClass.Pawn, Colour.White) },
             { (1,1), (PieceClass.Pawn, Colour.White) },
@@ -34,12 +34,12 @@ namespace BlazorApp1.Data
             { (6,6), (PieceClass.Pawn, Colour.Black) },
             { (7,6), (PieceClass.Pawn, Colour.Black) },
             { (0,7), (PieceClass.Rook, Colour.Black) },
-            { (1,7), (PieceClass.Bishop, Colour.Black) },
-            { (2,7), (PieceClass.Knight, Colour.Black) },
+            { (1,7), (PieceClass.Knight, Colour.Black) },
+            { (2,7), (PieceClass.Bishop, Colour.Black) },
             { (3,7), (PieceClass.Queen, Colour.Black) },
             { (4,7), (PieceClass.King, Colour.Black) },
-            { (5,7), (PieceClass.Knight, Colour.Black) },
-            { (6,7), (PieceClass.Bishop, Colour.Black) },
+            { (5,7), (PieceClass.Bishop, Colour.Black) },
+            { (6,7), (PieceClass.Knight, Colour.Black) },
             { (7,7), (PieceClass.Rook, Colour.Black) },
         };
 
@@ -56,11 +56,20 @@ namespace BlazorApp1.Data
                 case PieceClass.King:
                     moves = GetKingMoves(model, allPieces);
                     break;
+                case PieceClass.Queen:
+                    moves = GetQueenMoves(model, allPieces);
+                    break;
                 case PieceClass.Pawn:
                     moves =  GetPawnMoves(model, allPieces);
                     break;
                 case PieceClass.Rook:
                     moves = GetRookMoves(model, allPieces);
+                    break;
+                case PieceClass.Bishop:
+                     moves = GetBishopMoves(model, allPieces);
+                    break;
+                case PieceClass.Knight:
+                    moves = GetHorseyMoves(model, allPieces);
                     break;
                 default:
                     return new List<(int x, int y)>();
@@ -71,6 +80,33 @@ namespace BlazorApp1.Data
 
             return legalMoves;
 
+        }
+        private List<(int, int)> GetHorseyMoves(PieceModel model, List<PieceModel> allPieces)
+        {
+            var moves = new List<(int, int)>();
+            var p = model.Position;
+
+            var positions = new[] {
+                (p.x + 1, p.y - 2),
+                (p.x + 1, p.y + 2 ),
+                (p.x + 2, p.y + 1),
+                (p.x + 2, p.y - 1),
+
+                (p.x - 1, p.y - 2),
+                (p.x - 1, p.y + 2 ),
+                (p.x - 2, p.y + 1),
+                (p.x - 2, p.y - 1),
+            };
+
+            moves.AddRange(positions.Where(p => !SquareIsIllegal(model, allPieces, p)));
+            return moves;
+        }
+
+        private List<(int,int)> GetQueenMoves(PieceModel model,  List<PieceModel> allPieces)
+        {
+            var moves = GetBishopMoves(model, allPieces);
+            moves.AddRange(GetRookMoves(model, allPieces));
+            return moves;
         }
 
         private IEnumerable<(int, int)> GetRookMoves(PieceModel model, List<PieceModel> allPieces)
@@ -176,47 +212,89 @@ namespace BlazorApp1.Data
             var moves = new List<(int, int)>();
             if (payload.Position.y <7 && payload.Position.y  > 0)
             {
-                if (!allPieces.Any(p => p.Position.y == payload.Position.y + moveDirection && p.Position.x == payload.Position.x))
+                var newPos1 = (payload.Position.x, payload.Position.y + moveDirection);
+                var newPos2 = (payload.Position.x, payload.Position.y + 2*moveDirection);
+                if (SquareIsFree(allPieces, newPos1))
                 {
-                    moves.Add((payload.Position.x, payload.Position.y + moveDirection));
+                    moves.Add(newPos1);
 
                     //first move
-                    if (!allPieces.Any(p => p.Position.y == payload.Position.y + moveDirection * 2))
+                    if (SquareIsFree(allPieces, newPos2))
                     {
-                        if (payload.Colour == Colour.White && payload.Position.y == 1)
+                        if ((payload.Colour == Colour.White && payload.Position.y == 1) ||
+                            (payload.Colour == Colour.Black && payload.Position.y == 6))
                         {
-                            moves.Add((payload.Position.x, payload.Position.y + moveDirection * 2));
-
-                        }
-                        else if (payload.Colour == Colour.Black && payload.Position.y == 6)
-                        {
-                            moves.Add((payload.Position.x, payload.Position.y + moveDirection * 2));
-
-                        }
+                            moves.Add(newPos2);
+                        }                      
                     }
                 }
 
                 //attack moves:
-                if (allPieces.Where(p=> 
-                    payload.Colour != p.Colour && 
-                    p.Position.y == payload.Position.y + moveDirection &&
-                    p.Position.x == payload.Position.x + 1).Any())
+                var attackPos1 = (payload.Position.x+1, payload.Position.y + moveDirection);
+                var attackPos2 = (payload.Position.x-1, payload.Position.y + moveDirection);
+                if (SquareIsCapture(payload, allPieces, attackPos1))
                 {
-                    moves.Add((payload.Position.x + 1,  payload.Position.y + moveDirection));
+                    moves.Add(attackPos1);
                 }
 
-                if (allPieces.Where(p =>
-                    payload.Colour != p.Colour &&
-                    p.Position.y == payload.Position.y + moveDirection &&
-                    p.Position.x == payload.Position.x - 1).Any())
+                if (SquareIsCapture(payload, allPieces, attackPos2))
                 {
-                    moves.Add((payload.Position.x - 1, payload.Position.y + moveDirection));
+                    moves.Add(attackPos2);
                 }
             }
             return moves;
         }
 
+        private List<(int,int)> GetBishopMoves(PieceModel payload, List<PieceModel> allPieces) 
+        {
+            var moves = new List<(int, int)>();
 
+            var upleftX = -1;
+            var upleftY = -1;
+            var allowUpLeft = true;
+
+            var downleftX = -1;
+            var downleftY = 1;
+            var allowDownLeft = true;
+
+            var downrightX = 1;
+            var downrightY = 1;
+            var allowDownRight = true;
+
+            var uprightX = 1;
+            var uprightY = -1;
+            var allowUpRight = true;
+
+            for (int i = 1; i < 7; i++)
+            {
+                allowUpLeft = AddBishopMoveIfLegal(i, upleftX, upleftY, allowUpLeft, moves, payload, allPieces);                
+                allowDownLeft = AddBishopMoveIfLegal(i, downleftX, downleftY, allowDownLeft, moves, payload, allPieces);
+                allowDownRight = AddBishopMoveIfLegal(i, downrightX, downrightY, allowDownRight, moves, payload, allPieces);
+                allowUpRight = AddBishopMoveIfLegal(i, uprightX, uprightY, allowUpRight, moves, payload, allPieces);
+            }
+            return moves;
+            bool AddBishopMoveIfLegal(int moveLength, int directionX, int directionY, bool allowDirection ,List<(int,int)> moves, PieceModel payload, List<PieceModel> allPieces)
+            {
+                var pos = (x: payload.Position.x + moveLength * directionX, y: payload.Position.y + moveLength * directionY);
+                if (allowDirection)
+                {
+                    if (moveLength == 1)
+                    {
+                       // allowDirection = MoveIsCheck(pos, payload, allPieces);
+                    }
+                    if (SquareIsIllegal(payload, allPieces, pos))
+                    {
+                        allowDirection = false;
+                    }
+                    else
+                    {
+                        moves.Add(pos);
+                        allowDirection = !SquareIsCapture(payload, allPieces, pos);
+                    }
+                }
+                return allowDirection;
+            }
+        }
     
         private bool MoveIsCheck((int, int) pos, PieceModel payload, List<PieceModel> allPieces)
         {
@@ -239,30 +317,40 @@ namespace BlazorApp1.Data
         {
             var moves = new List<(int, int)>();
             var p = payload.Position;
-            if (p.x < 7 && p.y > 1 && PositionIsFree(payload, allPieces, (p.x + 1, p.y - 1))) 
-                moves.Add((p.x + 1, p.y - 1));
-            if (p.x < 7 && PositionIsFree(payload, allPieces, (p.x + 1, p.y ))) 
-                moves.Add((p.x + 1, p.y));
-            if (p.x < 7 && p.y < 7 && PositionIsFree(payload, allPieces, (p.x + 1, p.y + 1))) 
-                moves.Add((p.x + 1, p.y + 1));
 
-            if (p.x > 0 && p.y > 1 && PositionIsFree(payload, allPieces, (p.x - 1, p.y - 1))) 
-                moves.Add((p.x - 1, p.y - 1));
-            if (p.x > 0 && PositionIsFree(payload, allPieces, (p.x - 1, p.y))) 
-                moves.Add((p.x - 1, p.y));
-            if (p.x > 0 && p.y < 7 && PositionIsFree(payload, allPieces, (p.x - 1, p.y + 1))) 
-                moves.Add((p.x - 1, p.y + 1));
+            var positions = new[] {
+                (p.x + 1, p.y - 1),
+                (p.x + 1, p.y ),
+                (p.x + 1, p.y + 1),
 
-            if (p.y < 7 && PositionIsFree(payload, allPieces, (p.x, p.y + 1))) 
-                moves.Add((p.x, p.y + 1));
-            if (p.y > 1 && PositionIsFree(payload, allPieces, (p.x, p.y - 1))) 
-                moves.Add((p.x, p.y - 1));
+                (p.x, p.y + 1),
+                (p.x, p.y - 1),
+
+                (p.x - 1, p.y - 1),
+                (p.x - 1, p.y),
+                (p.x - 1, p.y + 1)
+            };
+
+            moves.AddRange(positions.Where(p=>!SquareIsIllegal(payload, allPieces, p)));
             return moves;
         }
 
-        private bool PositionIsFree(PieceModel piece, List<PieceModel> allPieces, (int x, int y) p )
+        private bool SquareIsFree(List<PieceModel> allPieces, (int x, int y) p)
         {
-            return allPieces.Any(a => a.PieceClass == piece.PieceClass && a.Position == p);
+            //check if piece of same colour is located at square p 
+            return !allPieces.Any(a => a.Position == p);
+        }
+
+        private bool SquareIsIllegal(PieceModel piece, List<PieceModel> allPieces, (int x, int y) p )
+        {
+            //check if piece of same colour is located at square p 
+            if (p.x < 0 || p.x > 7 || p.y < 0 || p.y > 7) return false;
+            return allPieces.Any(a => a.Colour == piece.Colour && a.Position == p);
+        }
+        private bool SquareIsCapture(PieceModel piece, List<PieceModel> allPieces, (int x, int y) p)
+        {
+            //check if piece of same colour is located at square p 
+            return allPieces.Any(a => a.Colour != piece.Colour && a.Position == p);
         }
     }
 }

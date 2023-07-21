@@ -63,6 +63,8 @@
     private async Task HandleDrop()
     {
 
+
+
         dropClass = "";
         var legalMoves = rules.GetLegalMoves(Container.GetCurrentPayload(), Container.Pieces, false);
         var legalDropSquare = legalMoves.Any(r => r == Model.Position);
@@ -72,11 +74,16 @@
         }
         else
         {
-            await Container.UpdatePieceAsync(Model.Position);
-            pieces = new List<PieceModel>();
-            StateHasChanged();
-            pieces.AddRange(Container.Pieces.Where(p => p.Position == Model.Position));
+            if (Container.Pieces.FirstOrDefault(p => p.Position == Model.Position) is PieceModel deletePiece)
+            {
+                //await Container.UpdatePieceAsync(Model.Position);
+                Container.RemovePiece(deletePiece);
+            }
 
+            await Container.UpdatePieceAsync(Model.Position);
+            pieces.Clear();
+            pieces.AddRange(Container.Pieces.Where(p => p.Position == Model.Position));
+            await Container.OnRefresh.InvokeAsync();
         }
     }
     

@@ -86,7 +86,7 @@
     string lastMove = "";
     //  List<(int x, int y)> BoardPositions = new List<(int x, int y)>();
 
-    List<JobModel> Jobs = new List<JobModel>();
+
     List<SquareModel> Squares = new List<SquareModel>();
     List<PieceModel> Pieces = new List<PieceModel>();
     string lastUpdatedJob = "";
@@ -98,8 +98,6 @@
 
     protected override void OnInitialized()
     {
-
-
         for(int y=0; y<8; y++)
         {
             for(int x = 0; x<8; x++)
@@ -111,16 +109,8 @@
                     Pieces.Add(new PieceModel((pos.x, pos.y), Guid.NewGuid().ToString(), type.Item1, type.Item2));
                 }
                 Squares.Add(new SquareModel((x, y)));
-                //BoardPositions.Add((x,y));
             }
         }
-        Jobs.Add(
-            new JobModel() {
-                Id = 1,
-                Description = "LarsJobDesc",
-                LastUpdated = DateTime.Now,
-                Status = JobStatuses.TODO
-    });
     }
 
     void HandlePieceMoved(PieceModel model)

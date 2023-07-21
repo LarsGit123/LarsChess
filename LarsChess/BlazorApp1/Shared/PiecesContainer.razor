@@ -41,6 +41,15 @@
         await OnRefresh.InvokeAsync();
     }
 
+    public void RemovePiece(PieceModel piece)
+    {
+        if (Pieces.FirstOrDefault(p => p.Id== piece.Id) is PieceModel capturedPiece)
+        {
+            CapturedPieces.Add(capturedPiece);
+            Pieces.Remove(capturedPiece);
+            StateHasChanged();
+        }
+    }
 
     public async Task UpdatePieceAsync((int x, int y) newPos)
     {
