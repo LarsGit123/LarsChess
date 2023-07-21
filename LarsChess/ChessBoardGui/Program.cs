@@ -1,4 +1,4 @@
-using BlazorApp1.Data;
+using ChessBoardGui.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 

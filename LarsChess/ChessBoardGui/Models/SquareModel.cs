@@ -1,4 +1,4 @@
-﻿namespace BlazorApp1.Models
+﻿namespace ChessBoardGui.Models
 {
     public class SquareModel
     {
