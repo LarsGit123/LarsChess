@@ -50,7 +50,6 @@ namespace BlazorApp1.Data
             if (model is null)
                 return new List<(int x, int y)>();
             
-            var p = model.Position;
             switch(model.PieceClass)
             {
                 case PieceClass.King:
