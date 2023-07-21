@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientChessBoard", "ClientChessBoard\ClientChessBoard.csproj", "{15A0EB5C-AFF8-4DD3-A805-0AA212D64FCE}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerChessBoard", "ServerChessBoard\ServerChessBoard.csproj", "{8BED30D6-BA68-4477-A3B7-EBC1E2095D26}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp1", "BlazorApp1\BlazorApp1.csproj", "{45970211-EE2F-4578-8FE9-0C86FECD8581}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{15A0EB5C-AFF8-4DD3-A805-0AA212D64FCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{15A0EB5C-AFF8-4DD3-A805-0AA212D64FCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{15A0EB5C-AFF8-4DD3-A805-0AA212D64FCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{15A0EB5C-AFF8-4DD3-A805-0AA212D64FCE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8BED30D6-BA68-4477-A3B7-EBC1E2095D26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8BED30D6-BA68-4477-A3B7-EBC1E2095D26}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8BED30D6-BA68-4477-A3B7-EBC1E2095D26}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8BED30D6-BA68-4477-A3B7-EBC1E2095D26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45970211-EE2F-4578-8FE9-0C86FECD8581}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45970211-EE2F-4578-8FE9-0C86FECD8581}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45970211-EE2F-4578-8FE9-0C86FECD8581}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45970211-EE2F-4578-8FE9-0C86FECD8581}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
