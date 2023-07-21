@@ -25,6 +25,7 @@
     private async Task HandleClick()
     {
         await Container.VisualizeLegalMoves(Model);
+        Container.Payload = this.Model.Id;
 
     }
 

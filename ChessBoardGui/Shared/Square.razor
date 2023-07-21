@@ -7,7 +7,8 @@
         ondragstart="event.dataTransfer.setData('', event.target.id);"
         @ondrop="HandleDrop"
         @ondragenter="HandleDragEnter"
-        @ondragleave="HandleDragLeave">
+        @ondragleave="HandleDragLeave"
+        @onclick="HandleClick">
     
         @foreach (var piece in pieces)
         {
