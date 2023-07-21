@@ -56,6 +56,14 @@
         }
     }
 
+    private async Task HandleClick()
+    {
+        if(Model.IsLegalSquare && Container.GetCurrentPayload().Position != Model.Position)
+        {
+            await HandleDrop();
+        }
+    }
+
     private void HandleDragLeave()
     {
         dropClass = "";
@@ -63,9 +71,6 @@
 
     private async Task HandleDrop()
     {
-
-
-
         dropClass = "";
         var legalMoves = rules.GetLegalMoves(Container.GetCurrentPayload(), Container.Pieces, false);
         var legalDropSquare = legalMoves.Any(r => r == Model.Position);
