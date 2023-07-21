@@ -5,10 +5,10 @@ on:
     - main
 env:
   AZURE_WEBAPP_NAME: LarsSjakk
-  AZURE_WEBAPP_PACKAGE_PATH: .\published
+  AZURE_WEBAPP_PACKAGE_PATH: BlazorApp1\published
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 7.0.x
-  WORKING_DIRECTORY: ''
+  WORKING_DIRECTORY: BlazorApp1
 jobs:
   build:
     runs-on: windows-latest
@@ -45,5 +45,5 @@ jobs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.LarsSjakk_22E5 }}
+        publish-profile: ${{ secrets.LarsSjakk_8ACD }}
         package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
