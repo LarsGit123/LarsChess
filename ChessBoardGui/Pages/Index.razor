@@ -2,16 +2,17 @@
 @using ChessBoardGui.Data;
 @using ChessBoardGui.Models;
 @inject Chessrules rules;
+@inject MoveExecuter moveExecuter;
 
 <PageTitle>Sjakk</PageTitle>
  
-<PiecesContainer Pieces = "Pieces" Squares="Squares" OnStatusUpdated="HandlePieceMoved" OnRefresh="Refresh" >
+<PiecesContainer CapturedPieces="CapturedPieces" Pieces = "Pieces" Squares="Squares" OnStatusUpdated="HandlePieceMoved" OnRefresh="Refresh" >
 
-    @if (Xcoords != null)
+    @if (rules.Xcoords != null)
     {
         <div class="boardrow">
 
-            @foreach (var x in Xcoords)
+            @foreach (var x in rules.Xcoords)
             {
                 <div class="square" style="height:1.5rem;">
                     <p>@x</p>
@@ -78,17 +79,37 @@
         </BoardRow>
 </PiecesContainer>
 
-<strong>last move @lastMove</strong>
+<div class="flex-row">
+    @for (int i = 0; i < moveExecuter.Moves.Count(); i++)
+    {
+        if (i == moveExecuter.BoardPositionIndex - 1)
+        {
+            <strong>@moveExecuter.Moves.ElementAt(i)</strong>
+        }
+        else
+        {
+            @moveExecuter.Moves.ElementAt(i)
+        }
+
+    }
+</div>
+<div>
+    <button @onclick="MoveGoBack">@("<-")</button>
+    <button @onclick="MoveGoForvard">@("->")</button>
+</div>
+
+
+
+
 
 
 @code{
-    string[] Xcoords = new[] {"A", "B", "C", "D", "E", "F", "G", "H" };
-    string lastMove = "";
-    //  List<(int x, int y)> BoardPositions = new List<(int x, int y)>();
 
+    //  List<(int x, int y)> BoardPositions = new List<(int x, int y)>();
 
     List<SquareModel> Squares = new List<SquareModel>();
     List<PieceModel> Pieces = new List<PieceModel>();
+    List<PieceModel> CapturedPieces = new List<PieceModel>();
     string lastUpdatedJob = "";
 
     private void Refresh()
@@ -119,8 +140,18 @@
         {
             return;
         }
-        lastMove = $"{model.OrgPosition.x} {model.OrgPosition.y} -> {model.Position.x} {model.Position.y}";
-        model.OrgPosition = model.Position;
+        moveExecuter.UpdateMovesState(model);
         StateHasChanged();
+    }
+
+    private void MoveGoBack()
+    {
+        moveExecuter.RevertMove(Pieces, CapturedPieces);
+    }
+    private void MoveGoForvard()
+    {
+        moveExecuter.UndoRevertMove(Pieces);
+        
+
     }
 }

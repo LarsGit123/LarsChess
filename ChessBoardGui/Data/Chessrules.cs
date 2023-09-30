@@ -6,6 +6,7 @@ namespace ChessBoardGui.Data
 {
     public class Chessrules
     {
+        public string[] Xcoords {get;} = new[] { "A", "B", "C", "D", "E", "F", "G", "H" };
         public Dictionary<(int, int), (PieceClass, Colour)> StartingPositions { get; private set; } = new Dictionary<(int, int), (PieceClass, Colour)>
         {
             { (0,0), (PieceClass.Rook, Colour.White) },

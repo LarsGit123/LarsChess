@@ -19,7 +19,7 @@
 
 
 @code {
-    public List<PieceModel> CapturedPieces { get; private set; } = new List<PieceModel>();
+    [Parameter] public List<PieceModel> CapturedPieces { get; set; }
     [Parameter] public List<PieceModel> Pieces { get; set; }
     [Parameter] public List<SquareModel> Squares { get; set; }
     [Parameter] public EventCallback<PieceModel> OnStatusUpdated { get; set; }
