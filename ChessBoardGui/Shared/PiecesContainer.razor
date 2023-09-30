@@ -2,10 +2,17 @@
 @using ChessBoardGui.Data;
 @inject Chessrules rules;
 
-@foreach(var piece in CapturedPieces)
-{
-    <Piece Model="piece" />
-}
+<div class="d-flex flex-row align-items-center flex-grow-0 piece">
+    @foreach (var piece in CapturedPieces)
+    {
+        <div class="p-2 piece">
+            <Piece Model="piece" />
+        </div>
+
+    }
+</div>
+
+
 <CascadingValue Value="this">
     @ChildContent
 </CascadingValue>

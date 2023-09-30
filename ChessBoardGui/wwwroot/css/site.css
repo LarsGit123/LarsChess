@@ -123,6 +123,7 @@ a, .btn-link {
     font-size:50pt;        
     padding:0px;
     margin:-8px;
+    max-width:70px;
 }
 
 .piece-black {
