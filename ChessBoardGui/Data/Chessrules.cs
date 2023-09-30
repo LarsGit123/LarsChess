@@ -330,6 +330,23 @@ namespace ChessBoardGui.Data
                 (p.x - 1, p.y + 1)
             };
 
+            //simple castling rule, TODO: refine
+            if(
+                !allPieces.Any(piece=> piece.Position.x == p.x -1 && piece.Position.y == p.y) &&  
+                !allPieces.Any(piece=> piece.Position.x == p.x -2 && piece.Position.y == p.y) &&  
+                !allPieces.Any(piece=> piece.Position.x == p.x -3 && piece.Position.y == p.y) &&  
+                allPieces.FirstOrDefault(a => a.Position.x + 4 == p.x && a.Position.y == p.y) is PieceModel pieceLeft && pieceLeft.PieceClass == PieceClass.Rook){
+                moves.Add((p.x - 2, p.y));
+            }
+
+            if (
+                !allPieces.Any(piece => piece.Position.x == p.x + 1 && piece.Position.y == p.y) &&
+                !allPieces.Any(piece => piece.Position.x == p.x + 2 && piece.Position.y == p.y) &&
+                allPieces.FirstOrDefault(a => a.Position.x - 3 == p.x && a.Position.y == p.y) is PieceModel pieceRight && pieceRight.PieceClass == PieceClass.Rook)
+            {
+                moves.Add((p.x + 2, p.y));
+            }
+
             moves.AddRange(positions.Where(p => !SquareIsIllegal(payload, allPieces, p)));
             return moves;
         }

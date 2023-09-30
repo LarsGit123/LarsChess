@@ -72,7 +72,8 @@
     private async Task HandleDrop()
     {
         dropClass = "";
-        var legalMoves = rules.GetLegalMoves(Container.GetCurrentPayload(), Container.Pieces, false);
+        var currentPiece = Container.GetCurrentPayload();
+        var legalMoves = rules.GetLegalMoves(currentPiece, Container.Pieces, false);
         var legalDropSquare = legalMoves.Any(r => r == Model.Position);
         if (!legalDropSquare)
         {
@@ -86,7 +87,36 @@
                 Container.RemovePiece(deletePiece);
             }
 
+
+
+
+            if (currentPiece.PieceClass == PieceClass.King )
+            {
+                if((currentPiece.Position.x - Model.Position.x) > 1)
+                {
+                    //castle left
+                    var rook = Container.Pieces.First(piece => piece.Position.x == Model.Position.x - 2 && piece.Position.y == Model.Position.y);
+                    var kingId = Container.Payload;
+                    Container.Payload = rook.Id;
+                    await Container.UpdatePieceAsync((Model.Position.x + 1, Model.Position.y));
+                    Container.Payload = kingId;
+                }
+                if ((currentPiece.Position.x - Model.Position.x) < -1)
+                {
+                    //castle right
+                    var rook = Container.Pieces.First(piece => piece.Position.x == Model.Position.x + 1 && piece.Position.y == Model.Position.y);
+                    var kingId = Container.Payload;
+                    Container.Payload = rook.Id;
+                    await Container.UpdatePieceAsync((Model.Position.x - 1, Model.Position.y));
+                    Container.Payload = kingId;
+                }
+            }
+            //execute piece move
             await Container.UpdatePieceAsync(Model.Position);
+            
+
+
+
             pieces.Clear();
             pieces.AddRange(Container.Pieces.Where(p => p.Position == Model.Position));
             await Container.OnRefresh.InvokeAsync();
