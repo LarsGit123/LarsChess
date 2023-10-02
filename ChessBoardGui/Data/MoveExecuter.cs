@@ -7,7 +7,7 @@ namespace ChessBoardGui.Data
     public class MoveExecuter
     {
         private Chessrules _rules { get; }
-        public List<string> Moves { get; set; } = new List<string>();
+        public List<Move> Moves { get; set; } = new List<Move>();
         private int moveCounter = 0;
         public int BoardPositionIndex { get; set; } = 0;
 
