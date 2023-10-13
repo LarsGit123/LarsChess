@@ -19,10 +19,10 @@
 
 
 @code {
-    [Parameter] public List<PieceModel> CapturedPieces { get; set; }
+    [Parameter] public Stack<PieceModel> CapturedPieces { get; set; }
     [Parameter] public List<PieceModel> Pieces { get; set; }
     [Parameter] public List<SquareModel> Squares { get; set; }
-    [Parameter] public EventCallback<PieceModel> OnStatusUpdated { get; set; }
+    [Parameter] public EventCallback<Move> OnStatusUpdated { get; set; }
     [Parameter] public EventCallback<PieceModel> OnRefresh { get; set; }
     [Parameter] public RenderFragment ChildContent { get; set; }
     public string Payload { get; set; }
@@ -51,7 +51,7 @@
     {
         if (Pieces.FirstOrDefault(p => p.Id== piece.Id) is PieceModel capturedPiece)
         {
-            CapturedPieces.Add(capturedPiece);
+            CapturedPieces.Push(capturedPiece);
             Pieces.Remove(capturedPiece);
             StateHasChanged();
         }
@@ -61,17 +61,21 @@
     {
 
         //capture piece
+        PieceModel? _capturedPiece = null;
         if (Pieces.FirstOrDefault(p => p.Position == newPos) is PieceModel capturedPiece)
         {
-            CapturedPieces.Add(capturedPiece);
+            _capturedPiece = capturedPiece;
+            CapturedPieces.Push(capturedPiece);
             Pieces.Remove(capturedPiece);
         }
         var piece = Pieces.FirstOrDefault(p => p.Id == Payload);
         if(piece != null)
         {
             piece.Position = newPos;
+            var move = new Move(rules, piece, _capturedPiece);
+            await OnStatusUpdated.InvokeAsync(move);
         }
-        await OnStatusUpdated.InvokeAsync(piece);
+       
     }
 
     public PieceModel GetCurrentPayload()

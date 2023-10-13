@@ -1,44 +1,61 @@
-﻿using System.Reflection;
+﻿using ChessBoardGui.Data;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace ChessBoardGui.Models
 {
     public class Move
     {
-        public int PieceId { get; set; }
+        private readonly Chessrules _rules;
+        private readonly PieceModel? _capturePiece;
+
+        public string PieceId { get; set; }
         public PieceClass Piece { get; set; }
         public (int x, int y) OriginSquare { get; set; }
         public (int x, int y) DestinationSquare { get; set; }
+        public int? CapturePieceId { get; }
         public bool IsCapture { get; set; }
-        public int CapturedPieceId { get; set; }
-        public int MoveNumber { get; set; }
         public Colour Player { get; set; }
+        private readonly PieceModel _model;
 
-        
-    }
+        public Move(Chessrules chessrules, PieceModel model, PieceModel? capturePiece)
+        {
+            _rules = chessrules;
+            PieceId = model.Id;
+            Piece = model.PieceClass;
+            OriginSquare = model.OrgPosition;
+            DestinationSquare = model.Position;
+            IsCapture = capturePiece is not null;
+            _capturePiece = capturePiece;
+            Player = model.Colour;
+            _model = model;
+        }
 
-    public static class MoveHelper
-    {
-        public static string GetPGN(this Move move)
+        public string GetPgn(int moveCounter)
         {
             string prefix = string.Empty;
-            if (move.Player == Colour.White)
+            if (Player == Colour.White)
             {
-                prefix = move.MoveNumber.ToString() + ". ";
+                prefix = moveCounter.ToString() + ". ";
             }
-            var pgn= string.Empty;
-            if (move.Piece == PieceClass.Pawn)
+            var pgn = string.Empty;
+            if (Piece == PieceClass.Pawn)
             {
-                if (move.Piece. == model.Position.x)
+                if (OriginSquare.x == DestinationSquare.x)
                 {
-                    move = _rules.Xcoords[model.Position.x].ToLower() + (model.Position.y + 1);
+                    pgn = _rules.Xcoords[DestinationSquare.x].ToLower() + (DestinationSquare);
                 }
                 else
                 {
-                    move = $"{_rules.Xcoords[model.OrgPosition.x].ToLower()}x{_rules.Xcoords[model.Position.x].ToLower()}{model.Position.y + 1}";
+                    pgn = $"{_rules.Xcoords[OriginSquare.x].ToLower()}x{_rules.Xcoords[DestinationSquare.x].ToLower()}{DestinationSquare.y}";
                 }
             }
+            return prefix + pgn;
+        }
+
+        internal void UpdateOriginPosition()
+        {
+            _model.OrgPosition = _model.Position;
         }
     }
-
 }

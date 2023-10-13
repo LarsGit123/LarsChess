@@ -84,11 +84,11 @@
     {
         if (i == moveExecuter.BoardPositionIndex - 1)
         {
-            <strong>@moveExecuter.Moves.ElementAt(i)</strong>
+            <strong>@moveExecuter.Moves.ElementAt(i).GetPgn(i)</strong>
         }
         else
         {
-            @moveExecuter.Moves.ElementAt(i)
+            @moveExecuter.Moves.ElementAt(i).GetPgn(i)
         }
 
     }
@@ -109,7 +109,7 @@
 
     List<SquareModel> Squares = new List<SquareModel>();
     List<PieceModel> Pieces = new List<PieceModel>();
-    List<PieceModel> CapturedPieces = new List<PieceModel>();
+    Stack<PieceModel> CapturedPieces = new Stack<PieceModel>();
     string lastUpdatedJob = "";
 
     private void Refresh()
@@ -134,13 +134,13 @@
         }
     }
 
-    void HandlePieceMoved(PieceModel model)
+    void HandlePieceMoved(Move move) 
     {
-        if(model is null)
+        if(move is null)
         {
             return;
         }
-        moveExecuter.UpdateMovesState(model);
+        moveExecuter.UpdateMovesState(move);
         StateHasChanged();
     }
 

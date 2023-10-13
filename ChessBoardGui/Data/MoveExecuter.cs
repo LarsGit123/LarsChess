@@ -7,7 +7,7 @@ namespace ChessBoardGui.Data
     public class MoveExecuter
     {
         private Chessrules _rules { get; }
-        public List<Move> Moves { get; set; } = new List<Move>();
+        public Stack<Move> Moves { get; set; } = new Stack<Move>();
         private int moveCounter = 0;
         public int BoardPositionIndex { get; set; } = 0;
 
@@ -17,45 +17,22 @@ namespace ChessBoardGui.Data
             _rules = rules;
         }
 
-        public void RevertMove(List<PieceModel> allPieces, List<PieceModel> capturedPieces)
+        public void RevertMove(List<PieceModel> allPieces, Stack<PieceModel> capturedPieces)
         {
+
             BoardPositionIndex--;
-            var move = Moves.ElementAt(BoardPositionIndex);
-            var player =  int.TryParse(move.Substring(0,1), out moveCounter)
-                ? Colour.White 
-                : Colour.Black;
+            var move = Moves.Pop();
+            var player =  move.Player;
 
-            var moveTo = move.Substring(move.Length - 2);
-
-            var cleanedMove = move.Replace("1. ", "").Replace("x", "");
-
-            (int x, int y) toPosition = GetPosition(moveTo);
-            (int x, int y) fromPosition;
-
-            if (cleanedMove.Replace(moveTo, "").Length < 2)
-            {
-                //pawn move eg 1. d5
-                //todo: how to determine single or double pawn move?
-                fromPosition = (toPosition.x, toPosition.y - 2);
-                throw new Exception();
-            }
-            else
-            {
-                var moveFrom = cleanedMove.Substring(0, move.Length - 3);
-                fromPosition = GetPosition(moveFrom);
-            }
             
-            var isCapture = move.Contains("x");
-            var PieceToRevert =  allPieces.First(p => p.Position == toPosition);
-            PieceToRevert.Position = fromPosition;
             
 
-            if(isCapture)
+            if(move.IsCapture)
             {
-                var capturedPiece = capturedPieces.Last();
-                capturedPiece.Position = toPosition;
+                var capturedPiece = capturedPieces.Pop();
+                capturedPiece.Position = move.DestinationSquare;
                 allPieces.Add(capturedPiece);
-                capturedPieces.Remove(capturedPiece);
+                allPieces.First(piece => piece.Id == move.PieceId).Position = move.OriginSquare;
             }
          
         }
@@ -76,32 +53,11 @@ namespace ChessBoardGui.Data
         {
 
         }
-        public void UpdateMovesState(PieceModel model)
+        public void UpdateMovesState(Move move)
         {
-            string prefix = string.Empty;
-            if (model.Colour == Colour.White)
-            {
-                moveCounter++;
-                prefix = moveCounter.ToString() + ". ";
-            }
-            var move = string.Empty;
-            if (model.PieceClass == PieceClass.Pawn)
-            {
-                if (model.OrgPosition.x == model.Position.x)
-                {
-                    move = _rules.Xcoords[model.Position.x].ToLower() + (model.Position.y + 1);
-                }
-                else
-                {
-                    move = $"{_rules.Xcoords[model.OrgPosition.x].ToLower()}x{_rules.Xcoords[model.Position.x].ToLower()}{model.Position.y + 1}";
-                }
-            }
-
-            Moves.Add(prefix + move);
-            model.OrgPosition = model.Position;
+            move.UpdateOriginPosition();
+            Moves.Push(move);            
             BoardPositionIndex = Moves.Count();
-
-        
         }
     }
 }
