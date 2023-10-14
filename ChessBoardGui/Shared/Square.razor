@@ -82,9 +82,8 @@
         else
         {
             if (Container.Pieces.FirstOrDefault(p => p.Position == Model.Position) is PieceModel deletePiece)
-            {
-                //await Container.UpdatePieceAsync(Model.Position);
-                Container.RemovePiece(deletePiece);
+            {          
+                //Container.RemovePiece(deletePiece);
             }
 
 

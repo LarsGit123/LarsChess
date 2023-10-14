@@ -31,24 +31,37 @@ namespace ChessBoardGui.Models
             _model = model;
         }
 
-        public string GetPgn(int moveCounter)
+        public string GetPgn(int moveCounter, List<PieceModel> allPieces)
         {
             string prefix = string.Empty;
             if (Player == Colour.White)
             {
-                prefix = moveCounter.ToString() + ". ";
+                prefix = (moveCounter/2).ToString() + ". ";
             }
             var pgn = string.Empty;
             if (Piece == PieceClass.Pawn)
             {
                 if (OriginSquare.x == DestinationSquare.x)
                 {
-                    pgn = _rules.Xcoords[DestinationSquare.x].ToLower() + (DestinationSquare);
+                    pgn = _rules.Xcoords[DestinationSquare.x].ToLower() + (DestinationSquare.y+1).ToString();
                 }
                 else
                 {
-                    pgn = $"{_rules.Xcoords[OriginSquare.x].ToLower()}x{_rules.Xcoords[DestinationSquare.x].ToLower()}{DestinationSquare.y}";
+                    pgn = $"{_rules.Xcoords[OriginSquare.x].ToLower()}x{_rules.Xcoords[DestinationSquare.x].ToLower()}{DestinationSquare.y+1}";
                 }
+            }
+            else
+            {
+                //todo: not working
+                string modifier = IsCapture ? "x" : "";
+                var otherPiece = allPieces.Where(p => p.Colour == Player && p.PieceClass == Piece && p.Id != PieceId).Select(p => _rules.GetLegalMoves(p, allPieces, false));
+                bool isAmbigous = otherPiece.Any(pos=> pos.Contains(DestinationSquare));
+                var origin = isAmbigous
+                     ? _rules.Xcoords[OriginSquare.x].ToLower() + (OriginSquare.y + 1).ToString()
+                     : "";
+                var pieceIndex = Piece.ToString().Substring(0, 1);
+                pgn = pieceIndex + origin + modifier + _rules.Xcoords[DestinationSquare.x].ToLower() + (DestinationSquare.y + 1).ToString();
+
             }
             return prefix + pgn;
         }

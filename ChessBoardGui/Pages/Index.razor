@@ -79,18 +79,19 @@
         </BoardRow>
 </PiecesContainer>
 
-<div class="flex-row">
+<div class="flex-container" style="display:flex; flex-direction:row;">
     @for (int i = 0; i < moveExecuter.Moves.Count(); i++)
     {
-        if (i == moveExecuter.BoardPositionIndex - 1)
-        {
-            <strong>@moveExecuter.Moves.ElementAt(i).GetPgn(i)</strong>
-        }
-        else
-        {
-            @moveExecuter.Moves.ElementAt(i).GetPgn(i)
-        }
-
+        <div style="margin:4px;">
+            @if (i == moveExecuter.BoardPositionIndex - 1)
+            {
+                <strong>@GetPgnString(i)</strong>
+            }
+            else
+            {
+                @GetPgnString(i)
+            }
+        </div>
     }
 </div>
 <div>
@@ -104,8 +105,10 @@
 
 
 @code{
-
-    //  List<(int x, int y)> BoardPositions = new List<(int x, int y)>();
+    string GetPgnString(int i)
+    {
+        return moveExecuter.Moves.ElementAt(moveExecuter.Moves.Count() - i - 1).GetPgn(i + 2, Pieces);
+    }
 
     List<SquareModel> Squares = new List<SquareModel>();
     List<PieceModel> Pieces = new List<PieceModel>();
@@ -151,7 +154,5 @@
     private void MoveGoForvard()
     {
         moveExecuter.UndoRevertMove(Pieces);
-        
-
     }
 }
